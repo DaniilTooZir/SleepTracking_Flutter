@@ -7,8 +7,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SupabaseConnection.initializeSupabase();
   await dotenv.load(fileName: ".env");
+  await SupabaseConnection.initializeSupabase();
+
   runApp(MyApp());
 }
 
