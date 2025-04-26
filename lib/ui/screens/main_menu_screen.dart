@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({super.key});
@@ -49,10 +50,7 @@ class MainMenuScreen extends StatelessWidget {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          _showSnackBar(
-                            context,
-                            'Открытие экрана отслеживания сна',
-                          );
+                          context.push('/sleepTracking');
                         },
                         child: const Text('Отслеживание'),
                       ),
