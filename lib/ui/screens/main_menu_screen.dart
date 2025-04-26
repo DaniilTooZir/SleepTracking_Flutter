@@ -29,7 +29,7 @@ class MainMenuScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.account_circle),
               onPressed: () {
-                _showSnackBar(context, 'Переход в личный кабинет');
+                context.push('/personalAccount');
               },
             ),
           ],
@@ -57,17 +57,14 @@ class MainMenuScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () {
-                          _showSnackBar(context, 'Открытие экрана графиков');
+                          context.push('/reportChart');
                         },
                         child: const Text('Графики'),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () {
-                          _showSnackBar(
-                            context,
-                            'Открытие экрана рекомендаций',
-                          );
+                          context.push('/recommendation');
                         },
                         child: const Text('Рекомендации'),
                       ),
