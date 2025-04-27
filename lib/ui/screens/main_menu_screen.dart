@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sleep_tracking/ui/screens/personal_account_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({super.key});
@@ -29,7 +30,33 @@ class MainMenuScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.account_circle),
               onPressed: () {
-                context.push('/personalAccount');
+                final screenWidth = MediaQuery.of(context).size.width;
+                final sheetWidth =
+                    screenWidth > 600 ? 400.0 : screenWidth * 0.9;
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  barrierColor: Colors.black.withOpacity(0.5),
+                  builder: (context) {
+                    return SafeArea(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          width: sheetWidth,
+                          height: double.infinity,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.horizontal(
+                              left: Radius.circular(20),
+                            ),
+                          ),
+                          child: const PersonalAccountScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                );
               },
             ),
           ],
