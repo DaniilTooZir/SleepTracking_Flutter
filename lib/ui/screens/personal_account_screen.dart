@@ -10,11 +10,11 @@ class PersonalAccountScreen extends StatefulWidget {
 class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: Row(
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
@@ -27,14 +27,14 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
               ),
             ],
           ),
-        ),
-        const Divider(height: 1),
-        const Expanded(
-          child: Center(
-            child: Text('Тут будет содержимое личного кабинета'),
+          const Divider(height: 1),
+          const Expanded(
+            child: Center(
+              child: Text('Тут будет содержимое личного кабинета'),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

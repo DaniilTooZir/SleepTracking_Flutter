@@ -5,17 +5,58 @@ import 'package:sleep_tracking/ui/screens/personal_account_screen.dart';
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({super.key});
 
-  void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+  void _openPersonalAccount(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWideScreen = screenWidth > 800;
+
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return SafeArea(
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              width: isWideScreen ? 400 : screenWidth * 0.85,
+              height: double.infinity,
+              margin: const EdgeInsets.only(right: 0),
+              child: Material(
+                color: Colors.white,
+                borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(20),
+                ),
+                child: Theme(
+                  data: Theme.of(context),
+                  child: const PersonalAccountScreen(),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final curvedAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        );
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(1, 0),
+            end: Offset.zero,
+          ).animate(curvedAnimation),
+          child: child,
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isWideScreen = screenWidth > 600;
-
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -29,35 +70,7 @@ class MainMenuScreen extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.account_circle),
-              onPressed: () {
-                final screenWidth = MediaQuery.of(context).size.width;
-                final sheetWidth =
-                    screenWidth > 600 ? 400.0 : screenWidth * 0.9;
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  barrierColor: Colors.black.withOpacity(0.5),
-                  builder: (context) {
-                    return SafeArea(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          width: sheetWidth,
-                          height: double.infinity,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.horizontal(
-                              left: Radius.circular(20),
-                            ),
-                          ),
-                          child: const PersonalAccountScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
+              onPressed: () => _openPersonalAccount(context),
             ),
           ],
         ),
