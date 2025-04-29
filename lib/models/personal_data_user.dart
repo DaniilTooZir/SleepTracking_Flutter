@@ -16,21 +16,21 @@ class PersonalDataUser{
 
   factory PersonalDataUser.fromMap(Map<String, dynamic> map) {
     return PersonalDataUser(
-      id: map['id'],
-      name: map['name'],
-      gender: map['gender'],
-      birthDate: DateTime.parse(map['birthDate']),
-      userId: map['userId'],
+      id: map['Id'],
+      name: map['Name'],
+      gender: map['Gender'],
+      birthDate: DateTime.parse(map['BirthDate']),
+      userId: map['UserId'],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'name': name,
-      'gender': gender,
-      'birthDate': birthDate.toIso8601String(),
-      'userId': userId,
+      'Id': id,
+      'Name': name,
+      'Gender': gender,
+      'BirthDate': birthDate.toIso8601String(),
+      'UserId': userId,
     };
   }
 }

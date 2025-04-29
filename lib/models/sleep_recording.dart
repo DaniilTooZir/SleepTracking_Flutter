@@ -19,13 +19,13 @@ class SleepRecording{
 });
   factory SleepRecording.fromMap(Map<String, dynamic> map) {
     return SleepRecording(
-      id: map['id'],
-      userId: map['userId'],
-      date: DateTime.parse(map['date']),
-      sleepStart: _parseInterval(map['sleepStart']),
-      sleepEnd: _parseInterval(map['sleepEnd']),
-      sleepDuration: map['sleepDuration'],
-      sleepQuality: map['sleepQuality'],
+      id: map['Id'],
+      userId: map['UserId'],
+      date: DateTime.parse(map['Date']),
+      sleepStart: _parseInterval(map['SleepStart']),
+      sleepEnd: _parseInterval(map['SleepEnd']),
+      sleepDuration: map['SleepDuration'],
+      sleepQuality: map['SleepQuality'],
     );
   }
 
@@ -33,7 +33,6 @@ class SleepRecording{
     final regex = RegExp(r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?');
     final match = regex.firstMatch(interval);
     if (match == null) return Duration.zero;
-
     final hours = int.tryParse(match.group(1) ?? '0') ?? 0;
     final minutes = int.tryParse(match.group(2) ?? '0') ?? 0;
     final seconds = int.tryParse(match.group(3) ?? '0') ?? 0;
@@ -43,13 +42,13 @@ class SleepRecording{
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'userId': userId,
-      'date': date.toIso8601String(),
-      'sleepStart': 'PT${sleepStart.inHours}H${sleepStart.inMinutes % 60}M${sleepStart.inSeconds % 60}S',
-      'sleepEnd': 'PT${sleepEnd.inHours}H${sleepEnd.inMinutes % 60}M${sleepEnd.inSeconds % 60}S',
-      'sleepDuration': sleepDuration,
-      'sleepQuality': sleepQuality,
+      'Id': id,
+      'UserId': userId,
+      'Date': date.toIso8601String(),
+      'SleepStart': 'PT${sleepStart.inHours}H${sleepStart.inMinutes % 60}M${sleepStart.inSeconds % 60}S',
+      'SleepEnd': 'PT${sleepEnd.inHours}H${sleepEnd.inMinutes % 60}M${sleepEnd.inSeconds % 60}S',
+      'SleepDuration': sleepDuration,
+      'SleepQuality': sleepQuality,
     };
   }
 }
