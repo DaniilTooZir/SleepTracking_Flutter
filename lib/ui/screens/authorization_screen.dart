@@ -41,7 +41,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       _loginController.clear();
       _passwordController.clear();
 
-      context.go('/main');
+      context.go('/sleepTracking');
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -56,7 +56,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('Вы вошли как гость.')));
 
-      context.go('/main');
+      context.go('/sleepTracking');
     } catch (e) {
       ScaffoldMessenger.of(
         context,

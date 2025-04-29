@@ -15,10 +15,14 @@ final GoRouter appRouter = GoRouter(
   routes: [
     GoRoute(path: '/', builder: (context, state) => AuthorizationScreen()),
     GoRoute(path: '/register', builder: (context, state) => RegisterScreen()),
-    GoRoute(path: '/main', builder: (context, state) => MainMenuScreen()),
-    GoRoute(path: '/sleepTracking', builder: (context, state) => SleepTrackingScreen()),
-    GoRoute(path: '/reportChart', builder: (context, state) => ReportChartScreen()),
-    GoRoute(path: '/recommendation', builder: (context, state) => RecommendationsScreen()),
     GoRoute(path: '/personalAccount', builder: (context, state) => PersonalAccountScreen()),
+    ShellRoute(
+      builder: (context, state, child) => MainMenuScreen(child: child),
+      routes: [
+        GoRoute(path: '/sleepTracking', builder: (context, state) => SleepTrackingScreen()),
+        GoRoute(path: '/reportChart', builder: (context, state) => ReportChartScreen()),
+        GoRoute(path: '/recommendation', builder: (context, state) => RecommendationsScreen()),
+      ]
+    )
   ],
 );

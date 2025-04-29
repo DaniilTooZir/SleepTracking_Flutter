@@ -2,13 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sleep_tracking/ui/screens/personal_account_screen.dart';
 
-class MainMenuScreen extends StatelessWidget {
-  const MainMenuScreen({super.key});
+class MainMenuScreen extends StatefulWidget {
+  final Widget child;
+  const MainMenuScreen({super.key, required this.child});
+  @override
+  _MainMenuScreenState createState() => _MainMenuScreenState();
+}
 
+class _MainMenuScreenState extends State<MainMenuScreen> {
+  int _currentIndex = 0;
+
+  final List<String> _routes = [
+    '/sleepTracking',
+    '/reportChart',
+    '/recommendation',
+  ];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateIndex();
+  }
+
+  void _updateIndex() {
+    final location = GoRouterState.of(context).uri.toString();
+
+    if (location.startsWith('/reportChart')) {
+      _currentIndex = 1;
+    } else if (location.startsWith('/recommendation')) {
+      _currentIndex = 2;
+    } else {
+      _currentIndex = 0;
+    }
+  }
+
+  void _onItemTapped(int index) {
+    if (_currentIndex != index) {
+      context.go(_routes[index]);
+    }
+  }
   void _openPersonalAccount(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isWideScreen = screenWidth > 800;
-
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -52,11 +87,8 @@ class MainMenuScreen extends StatelessWidget {
       },
     );
   }
-
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isWideScreen = screenWidth > 600;
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -75,46 +107,21 @@ class MainMenuScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Center(
-            child: SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: isWideScreen ? 400 : double.infinity,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          context.push('/sleepTracking');
-                        },
-                        child: const Text('Отслеживание'),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          context.push('/reportChart');
-                        },
-                        child: const Text('Графики'),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          context.push('/recommendation');
-                        },
-                        child: const Text('Рекомендации'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
+      body: widget.child,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.bedtime), label: 'Сон'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'Графики',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.recommend),
+            label: 'Рекомендации',
+          ),
+        ],
       ),
     );
   }
