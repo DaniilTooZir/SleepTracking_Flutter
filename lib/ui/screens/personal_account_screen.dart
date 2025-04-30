@@ -114,14 +114,14 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                         children: [
                           ElevatedButton.icon(
                             onPressed: () {
-                              // TODO: реализовать открытие формы добавления данных
+                              //реализовать открытие формы добавления данных
                             },
                             icon: const Icon(Icons.add),
                             label: const Text('Добавить данные'),
                           ),
                           ElevatedButton.icon(
                             onPressed: () {
-                              // TODO: реализовать открытие настроек
+                              //реализовать открытие настроек
                             },
                             icon: const Icon(Icons.settings),
                             label: const Text('Настройки'),
