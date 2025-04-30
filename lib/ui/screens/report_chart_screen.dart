@@ -63,7 +63,7 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
                               border: OutlineInputBorder(),
                             ),
                             items:
-                                ['Все', 'Плохое', 'Среднее', 'Хорошее']
+                                ['Все', 'Ужасное','Плохое', 'Среднее', 'Хорошее', 'Отличное']
                                     .map(
                                       (value) => DropdownMenuItem(
                                         value: value,
