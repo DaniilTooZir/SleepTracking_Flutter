@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sleep_tracking/data/services/auth_service.dart';
 import 'package:sleep_tracking/models/user.dart';
-import 'package:sleep_tracking/ui/screens/registration_screen.dart';
 import 'package:sleep_tracking/data/services/login_as_guest_service.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,7 +16,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
   final _passwordController = TextEditingController();
   final _authService = AuthService();
   final _guestService = LoginAsGuestService();
-
+  int? _currentUserId;
   Future<void> _authorization() async {
     final login = _loginController.text.trim();
     final password = _passwordController.text.trim();
@@ -34,14 +33,14 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         login: login,
         password: password,
       );
-
+      _currentUserId = user.id;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Добро пожаловать, ${user.login}!')),
       );
       _loginController.clear();
       _passwordController.clear();
 
-      context.go('/sleepTracking');
+      context.go('/sleepTracking', extra: _currentUserId);
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -56,7 +55,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('Вы вошли как гость.')));
 
-      context.go('/sleepTracking');
+      context.go('/sleepTracking', extra: guest.id);
     } catch (e) {
       ScaffoldMessenger.of(
         context,

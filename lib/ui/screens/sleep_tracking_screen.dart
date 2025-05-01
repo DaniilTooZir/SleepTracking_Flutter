@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sleep_tracking/data/services/sleep_tracking_service.dart';
+import 'package:sleep_tracking/models/sleep_recording.dart';
 
 class SleepTrackingScreen extends StatefulWidget {
-  const SleepTrackingScreen({super.key});
+  final int userId;
+  const SleepTrackingScreen({super.key, required  this.userId});
 
   @override
   _SleepTrackingScreenState createState() => _SleepTrackingScreenState();
@@ -9,7 +12,6 @@ class SleepTrackingScreen extends StatefulWidget {
 
 class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
   final _formKey = GlobalKey<FormState>();
-
   DateTime? _selectedDate;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
@@ -22,6 +24,31 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
     'Хорошее',
     'Отличное',
   ];
+
+  final SleepTrackingService _sleepTrackingService = SleepTrackingService();
+
+  // Список записей о сне
+  List<SleepRecording> _sleepRecords = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSleepRecords();
+  }
+
+  Future<void> _loadSleepRecords() async {
+    try {
+      final records = await _sleepTrackingService.getSleepRecords(
+          widget.userId);
+      setState(() {
+        _sleepRecords = records;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка загрузки записей: $e')),
+      );
+    }
+  }
 
   Future<void> _pickDate() async {
     final DateTime? date = await showDatePicker(
@@ -51,20 +78,40 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
     }
   }
 
-  void _addSleepRecord() {
+  Future<void> _addSleepRecord() async {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Запись добавлена (визуально)')),
-      );
+      try {
+        final sleepStart = Duration(
+            hours: _startTime!.hour, minutes: _startTime!.minute);
+        final sleepEnd = Duration(
+            hours: _endTime!.hour, minutes: _endTime!.minute);
+
+        final sleepRecord = await _sleepTrackingService.addSleepRecord(
+          userId: widget.userId,
+          date: _selectedDate!,
+          sleepStart: sleepStart,
+          sleepEnd: sleepEnd,
+          sleepQuality: _selectedQuality!,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Запись добавлена')),
+        );
+
+        // Обновляем список записей о сне
+        _loadSleepRecords();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка: $e')),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width > 600;
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Отслеживание сна')),
+      appBar: AppBar(title: Text('Отслеживание сна')),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Center(
@@ -78,13 +125,17 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
                       key: _formKey,
                       child: Column(
                         children: [
+                          // Дата
                           Row(
                             children: [
                               Expanded(
                                 child: Text(
                                   _selectedDate == null
                                       ? 'Дата сна не выбрана'
-                                      : 'Дата сна: ${_selectedDate!.toLocal().toString().split(' ')[0]}',
+                                      : 'Дата сна: ${_selectedDate!
+                                      .toLocal()
+                                      .toString()
+                                      .split(' ')[0]}',
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -95,13 +146,15 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
                             ],
                           ),
                           const SizedBox(height: 10),
+                          // Время начала
                           Row(
                             children: [
                               Expanded(
                                 child: Text(
                                   _startTime == null
                                       ? 'Время начала не выбрано'
-                                      : 'Начало сна: ${_startTime!.format(context)}',
+                                      : 'Начало сна: ${_startTime!.format(
+                                      context)}',
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -112,13 +165,15 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
                             ],
                           ),
                           const SizedBox(height: 10),
+                          // Время конца
                           Row(
                             children: [
                               Expanded(
                                 child: Text(
                                   _endTime == null
                                       ? 'Время конца не выбрано'
-                                      : 'Конец сна: ${_endTime!.format(context)}',
+                                      : 'Конец сна: ${_endTime!.format(
+                                      context)}',
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -129,29 +184,26 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
                             ],
                           ),
                           const SizedBox(height: 10),
+                          // Качество сна
                           DropdownButtonFormField<String>(
                             decoration: const InputDecoration(
                               labelText: 'Качество сна',
                               border: OutlineInputBorder(),
                             ),
                             value: _selectedQuality,
-                            items:
-                                _qualityOptions
-                                    .map(
-                                      (quality) => DropdownMenuItem(
-                                        value: quality,
-                                        child: Text(quality),
-                                      ),
-                                    )
-                                    .toList(),
-                            onChanged:
-                                (value) =>
-                                    setState(() => _selectedQuality = value),
-                            validator:
-                                (value) =>
-                                    value == null
-                                        ? 'Выберите качество сна'
-                                        : null,
+                            items: _qualityOptions
+                                .map(
+                                  (quality) =>
+                                  DropdownMenuItem(
+                                    value: quality,
+                                    child: Text(quality),
+                                  ),
+                            )
+                                .toList(),
+                            onChanged: (value) =>
+                                setState(() => _selectedQuality = value),
+                            validator: (value) =>
+                            value == null ? 'Выберите качество сна' : null,
                           ),
                           const SizedBox(height: 20),
                           SizedBox(
@@ -170,12 +222,46 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
                     const SizedBox(height: 10),
                     SizedBox(
                       height: 200,
-                      child: Center(
+                      child: _sleepRecords.isEmpty
+                          ? const Center(
                         child: Text(
-                          'Тут будет отображение записей о сне из базы данных',
-                          textAlign: TextAlign.center,
+                          'Нет записей о сне',
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
+                      )
+                          : ListView.builder(
+                        itemCount: _sleepRecords.length,
+                        itemBuilder: (context, index) {
+                          final record = _sleepRecords[index];
+                          return ListTile(
+                            title: Text(
+                                'Дата: ${record.date.toLocal().toString().split(
+                                    ' ')[0]}'),
+                            subtitle: Text(
+                                'Начало: ${record.sleepStart}, Конец: ${record
+                                    .sleepEnd}, Качество: ${record
+                                    .sleepQuality}'),
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete, color: Colors.red),
+                              onPressed: () async {
+                                try {
+                                  if (record.id != null) {
+                                    _deleteSleepRecord(record.id!);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text(
+                                          'Ошибка: ID записи не найден')),
+                                    );
+                                  }
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Ошибка: $e')),
+                                  );
+                                }
+                              },
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -186,5 +272,19 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
         },
       ),
     );
+  }
+
+  Future<void> _deleteSleepRecord(int id) async {
+    try {
+      await _sleepTrackingService.deleteSleepRecord(id);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Запись удалена')),
+      );
+      _loadSleepRecords();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка: $e')),
+      );
+    }
   }
 }

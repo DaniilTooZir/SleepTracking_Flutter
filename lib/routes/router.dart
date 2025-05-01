@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 //Экраны для маршрутов
@@ -18,11 +17,26 @@ final GoRouter appRouter = GoRouter(
     ShellRoute(
       builder: (context, state, child) => MainMenuScreen(child: child),
       routes: [
-        GoRoute(path: '/personalAccount', builder: (context, state) => PersonalAccountScreen()),
-        GoRoute(path: '/sleepTracking', builder: (context, state) => SleepTrackingScreen()),
-        GoRoute(path: '/reportChart', builder: (context, state) => ReportChartScreen()),
-        GoRoute(path: '/recommendation', builder: (context, state) => RecommendationsScreen()),
-      ]
-    )
+        GoRoute(
+          path: '/personalAccount',
+          builder: (context, state) => PersonalAccountScreen(),
+        ),
+        GoRoute(
+          path: '/sleepTracking',
+          builder: (context, state) {
+            final userId = state.extra as int;
+            return SleepTrackingScreen(userId: userId);
+          },
+        ),
+        GoRoute(
+          path: '/reportChart',
+          builder: (context, state) => ReportChartScreen(),
+        ),
+        GoRoute(
+          path: '/recommendation',
+          builder: (context, state) => RecommendationsScreen(),
+        ),
+      ],
+    ),
   ],
 );

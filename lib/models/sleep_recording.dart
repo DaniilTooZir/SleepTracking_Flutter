@@ -1,6 +1,6 @@
 
 class SleepRecording{
-  final int id;
+  final int? id;
   final int userId;
   final DateTime date;
   final Duration sleepStart;
@@ -9,7 +9,7 @@ class SleepRecording{
   final String sleepQuality;
 
   SleepRecording({
-    required this.id,
+    this.id,
     required this.userId,
     required this.date,
     required this.sleepStart,
@@ -40,9 +40,8 @@ class SleepRecording{
     return Duration(hours: hours, minutes: minutes, seconds: seconds);
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'Id': id,
+  Map<String, dynamic> toMap({bool includeId = false}) {
+    final map = <String, dynamic> {
       'UserId': userId,
       'Date': date.toIso8601String(),
       'SleepStart': 'PT${sleepStart.inHours}H${sleepStart.inMinutes % 60}M${sleepStart.inSeconds % 60}S',
@@ -50,5 +49,11 @@ class SleepRecording{
       'SleepDuration': sleepDuration,
       'SleepQuality': sleepQuality,
     };
+
+    if(includeId && id != null){
+      map['Id'] = id;
+    }
+
+    return map;
   }
 }
