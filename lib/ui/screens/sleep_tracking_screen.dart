@@ -137,6 +137,12 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  String _formatDurationToTime(Duration duration) {
+    final hours = duration.inHours.remainder(24).toString().padLeft(2, '0');
+    final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
+    return '$hours:$minutes';
+  }
+
   Widget _buildTimeRow(String label, TimeOfDay? time, VoidCallback onTap) {
     return Row(
       children: [
@@ -260,7 +266,9 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
                                   'Дата: ${record.date.toLocal().toString().split(' ')[0]}',
                                 ),
                                 subtitle: Text(
-                                  'Начало: ${record.sleepStart}, Конец: ${record.sleepEnd}, Качество: ${record.sleepQuality}',
+                                  'Начало: ${_formatDurationToTime(record.sleepStart)}, '
+                                  'Конец: ${_formatDurationToTime(record.sleepEnd)}, '
+                                  'Качество: ${record.sleepQuality}',
                                 ),
                                 trailing: IconButton(
                                   icon: const Icon(

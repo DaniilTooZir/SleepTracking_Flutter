@@ -22,9 +22,9 @@ class SleepRecording{
       id: map['Id'] != null ? map['Id'] as int : null,
       userId: map['UserId'],
       date: DateTime.parse(map['Date']),
-      sleepStart: _parseInterval(map['SleepStart']),
-      sleepEnd: _parseInterval(map['SleepEnd']),
-      sleepDuration: map['SleepDuration'],
+      sleepStart: _parseInterval(map['SleepStart']?.toString() ?? ''),
+      sleepEnd: _parseInterval(map['SleepEnd']?.toString() ?? ''),
+      sleepDuration: (map['SleepDuration'] as num).toDouble(),
       sleepQuality: map['SleepQuality'],
     );
   }
