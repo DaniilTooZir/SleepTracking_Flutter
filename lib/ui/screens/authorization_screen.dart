@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sleep_tracking/data/services/auth_service.dart';
 import 'package:sleep_tracking/models/user.dart';
 import 'package:sleep_tracking/data/services/login_as_guest_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sleep_tracking/providers/user_provider.dart';
 
 class AuthorizationScreen extends StatefulWidget {
   const AuthorizationScreen({super.key});
@@ -16,7 +18,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
   final _passwordController = TextEditingController();
   final _authService = AuthService();
   final _guestService = LoginAsGuestService();
-  int? _currentUserId;
+
   Future<void> _authorization() async {
     final login = _loginController.text.trim();
     final password = _passwordController.text.trim();
@@ -33,14 +35,17 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         login: login,
         password: password,
       );
-      _currentUserId = user.id;
+      if (user.id != null) {
+        Provider.of<UserProvider>(context, listen: false).setUserId(user.id!);
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Добро пожаловать, ${user.login}!')),
       );
       _loginController.clear();
       _passwordController.clear();
 
-      context.go('/sleepTracking', extra: _currentUserId);
+      context.go('/sleepTracking');
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -51,11 +56,12 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
   Future<void> _guestLogin() async {
     try {
       UserModel guest = await _guestService.loginAsGuest();
+      Provider.of<UserProvider>(context, listen: false).setUserId(guest.id!);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Вы вошли как гость.')));
 
-      context.go('/sleepTracking', extra: guest.id);
+      context.go('/sleepTracking');
     } catch (e) {
       ScaffoldMessenger.of(
         context,

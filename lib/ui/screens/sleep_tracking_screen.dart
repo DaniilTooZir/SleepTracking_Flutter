@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sleep_tracking/data/services/sleep_tracking_service.dart';
 import 'package:sleep_tracking/models/sleep_recording.dart';
+import 'package:sleep_tracking/providers/user_provider.dart';
 
 class SleepTrackingScreen extends StatefulWidget {
-  final int userId;
-  const SleepTrackingScreen({super.key, required  this.userId});
+  const SleepTrackingScreen({super.key});
 
   @override
   _SleepTrackingScreenState createState() => _SleepTrackingScreenState();
@@ -33,20 +34,26 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
   @override
   void initState() {
     super.initState();
-    _loadSleepRecords();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadSleepRecords();
+    });
   }
 
   Future<void> _loadSleepRecords() async {
-    try {
-      final records = await _sleepTrackingService.getSleepRecords(
-          widget.userId);
-      setState(() {
-        _sleepRecords = records;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ошибка загрузки записей: $e')),
-      );
+    final userId = context
+        .read<UserProvider>()
+        .userId;
+    if (userId == null) {
+      try {
+        final records = await _sleepTrackingService.getSleepRecords(userId!);
+        setState(() {
+          _sleepRecords = records;
+        });
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка загрузки записей: $e')),
+        );
+      }
     }
   }
 
@@ -80,6 +87,13 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
 
   Future<void> _addSleepRecord() async {
     if (_formKey.currentState!.validate()) {
+      final userId = context.read<UserProvider>().userId;
+      if (userId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ошибка: не найден пользователь')),
+        );
+        return;
+      }
       try {
         final sleepStart = Duration(
             hours: _startTime!.hour, minutes: _startTime!.minute);
@@ -87,7 +101,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
             hours: _endTime!.hour, minutes: _endTime!.minute);
 
         final sleepRecord = await _sleepTrackingService.addSleepRecord(
-          userId: widget.userId,
+          userId: userId,
           date: _selectedDate!,
           sleepStart: sleepStart,
           sleepEnd: sleepEnd,

@@ -13,7 +13,10 @@ class SleepTrackingService {
     required String sleepQuality,
   }) async {
     try {
-      final sleepDuration = sleepEnd.inMinutes - sleepStart.inMinutes;
+      final duration = sleepEnd - sleepStart;
+      final sleepDuration = duration.inMinutes < 0
+          ? (duration + const Duration(hours: 24)).inMinutes
+          : duration.inMinutes;
 
       final newRecord = SleepRecording(
         userId: userId,
@@ -60,13 +63,7 @@ class SleepTrackingService {
           .delete()
           .eq('Id', recordId);
 
-      if (response.error != null) {
-        throw Exception('Ошибка при удалении записи о сне: ${response.error!.message}');
-      }
-      if (response.data == null || response.data.isEmpty) {
-        throw Exception('Запись не найдена или не была удалена.');
-      }
-      print('Запись о сне удалена успешно.');
+        throw Exception('Запись была удалена.');
     } catch (e) {
       throw Exception('Ошибка при удалении записи о сне: $e');
     }

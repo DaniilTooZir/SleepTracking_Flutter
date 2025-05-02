@@ -38,6 +38,7 @@ dependencies:
 
   #Navigation
   go_router: ^15.1.0
+  provider: ^6.1.5
 
   #Chart
   fl_chart: ^0.71.0

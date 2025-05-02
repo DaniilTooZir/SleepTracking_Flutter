@@ -19,7 +19,7 @@ class SleepRecording{
 });
   factory SleepRecording.fromMap(Map<String, dynamic> map) {
     return SleepRecording(
-      id: map['Id'],
+      id: map['Id'] != null ? map['Id'] as int : null,
       userId: map['UserId'],
       date: DateTime.parse(map['Date']),
       sleepStart: _parseInterval(map['SleepStart']),
