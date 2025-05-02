@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sleep_tracking/data/database/connection_to_database.dart';
 import 'package:sleep_tracking/models/sleep_recording.dart';
@@ -15,15 +16,15 @@ class SleepTrackingService {
     try {
       final duration = sleepEnd - sleepStart;
       final sleepDuration = duration.inMinutes < 0
-          ? (duration + const Duration(hours: 24)).inMinutes
-          : duration.inMinutes;
+          ? (duration + const Duration(hours: 24)).inMinutes / 60
+          : duration.inMinutes / 60;
 
       final newRecord = SleepRecording(
         userId: userId,
         date: date,
         sleepStart: sleepStart,
         sleepEnd: sleepEnd,
-        sleepDuration: sleepDuration.toDouble(),
+        sleepDuration: sleepDuration,
         sleepQuality: sleepQuality,
       );
 
@@ -35,8 +36,9 @@ class SleepTrackingService {
               .single();
 
       return SleepRecording.fromMap(response);
-    } catch (e) {
-      throw Exception('Ошибка при добавлении записи о сне: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Ошибка при добавлении записи о сне: $e\n$stackTrace');
+      throw Exception('Не удалось добавить запись о сне');
     }
   }
 
@@ -48,11 +50,11 @@ class SleepTrackingService {
           .eq('UserId', userId)
           .order('Date', ascending: false);
 
-      return (response as List)
-          .map((record) => SleepRecording.fromMap(record))
-          .toList();
-    } catch (e) {
-      throw Exception('Ошибка при получении записей о сне: $e');
+      final List<Map<String, dynamic>> records = response;
+      return records.map(SleepRecording.fromMap).toList();
+    } catch (e, stackTrace) {
+      debugPrint('Ошибка при получении записей: $e\n$stackTrace');
+      throw Exception('Не удалось получить записи о сне');
     }
   }
 
@@ -62,10 +64,9 @@ class SleepTrackingService {
           .from('SleepRecording')
           .delete()
           .eq('Id', recordId);
-
-        throw Exception('Запись была удалена.');
-    } catch (e) {
-      throw Exception('Ошибка при удалении записи о сне: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Ошибка при удалении записи: $e\n$stackTrace');
+      throw Exception('Не удалось удалить запись о сне');
     }
   }
 }
