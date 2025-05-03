@@ -30,14 +30,25 @@ class SleepRecording{
   }
 
   static Duration _parseInterval(String interval) {
-    final regex = RegExp(r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?');
-    final match = regex.firstMatch(interval);
-    if (match == null) return Duration.zero;
-    final hours = int.tryParse(match.group(1) ?? '0') ?? 0;
-    final minutes = int.tryParse(match.group(2) ?? '0') ?? 0;
-    final seconds = int.tryParse(match.group(3) ?? '0') ?? 0;
+    final dayRegex = RegExp(r'(\d+)\s+days?\s+(\d+):(\d+):(\d+)');
+    final timeOnlyRegex = RegExp(r'(\d+):(\d+):(\d+)');
 
-    return Duration(hours: hours, minutes: minutes, seconds: seconds);
+    if (dayRegex.hasMatch(interval)) {
+      final match = dayRegex.firstMatch(interval)!;
+      final days = int.parse(match.group(1)!);
+      final hours = int.parse(match.group(2)!);
+      final minutes = int.parse(match.group(3)!);
+      final seconds = int.parse(match.group(4)!);
+      return Duration(days: days, hours: hours, minutes: minutes, seconds: seconds);
+    } else if (timeOnlyRegex.hasMatch(interval)) {
+      final match = timeOnlyRegex.firstMatch(interval)!;
+      final hours = int.parse(match.group(1)!);
+      final minutes = int.parse(match.group(2)!);
+      final seconds = int.parse(match.group(3)!);
+      return Duration(hours: hours, minutes: minutes, seconds: seconds);
+    }
+
+    return Duration.zero;
   }
 
   Map<String, dynamic> toMap({bool includeId = false}) {
