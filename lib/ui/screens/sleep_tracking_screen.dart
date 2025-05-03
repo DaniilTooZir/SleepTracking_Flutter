@@ -174,7 +174,11 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
       ],
     );
   }
-
+  String formatDoubleHoursToHM(double hours) {
+    final h = hours.floor();
+    final m = ((hours - h) * 60).round();
+    return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -268,7 +272,9 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
                                 subtitle: Text(
                                   'Начало: ${_formatDurationToTime(record.sleepStart)}, '
                                   'Конец: ${_formatDurationToTime(record.sleepEnd)}, '
+                                  'Длительность: ${formatDoubleHoursToHM(record.sleepDuration)} ч, '
                                   'Качество: ${record.sleepQuality}',
+
                                 ),
                                 trailing: IconButton(
                                   icon: const Icon(
