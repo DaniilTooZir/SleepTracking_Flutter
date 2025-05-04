@@ -194,6 +194,8 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
     );
   }
 
+  // TODO: Доработать отображение графика, а именно отображение легенд
+
   Widget _buildSleepChartWithLegend(bool isWide) {
     final series = [
       {
