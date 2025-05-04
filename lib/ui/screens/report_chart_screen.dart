@@ -51,7 +51,7 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
         _sleepRecords = sleepRecords;
         _averageSleepDuration = _reportChartService
             .calculateAverageSleepDuration(sleepRecords);
-        _averageSleepQuality _reportChartService.calculateAverageSleepQuality(
+        _averageSleepQuality = _reportChartService.calculateAverageSleepQuality(
           sleepRecords,
         );
       });
