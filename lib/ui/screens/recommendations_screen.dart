@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sleep_tracking/providers/user_provider.dart';
+import 'package:sleep_tracking/data/services/recommendation_service.dart';
 
 class RecommendationsScreen extends StatefulWidget {
   const RecommendationsScreen({super.key});
@@ -8,66 +11,62 @@ class RecommendationsScreen extends StatefulWidget {
 }
 
 class _RecommendationsScreenState extends State<RecommendationsScreen> {
-  final List<String> _recommendations = [
-    'Старайтесь ложиться спать и просыпаться в одно и то же время.',
-    'Избегайте экранов за час до сна.',
-    'Не употребляйте кофеин вечером.',
-  ];
+  List<String> _recommendations = [];
+  bool _isLoading = true;
 
-  void _refreshRecommendations() {
-    setState(() {
-      // Здесь позже будет логика обновления рекомендаций
-    });
+  @override
+  void initState() {
+    super.initState();
+    _loadRecommendations();
+  }
+
+  Future<void> _loadRecommendations() async {
+    final userId = Provider.of<UserProvider>(context, listen: false).userId;
+
+    if (userId != null) {
+      final service = RecommendationService();
+      final recs = await service.generateRecommendations(userId);
+      setState(() {
+        _recommendations = recs;
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _recommendations = ['Ошибка: пользователь не найден.'];
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Рекомендации')),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 700),
-                child: Column(
-                  children: [
-                    ListView.separated(
-                      itemCount: _recommendations.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          leading: const Icon(Icons.check_circle_outline),
-                          title: Text(
-                            _recommendations[index],
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        );
-                      },
-                      separatorBuilder:
-                          (context, index) => const Divider(thickness: 1),
+      appBar: AppBar(title: const Text('Рекомендации по сну')),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _recommendations.isEmpty
+              ? const Center(child: Text('Нет доступных рекомендаций.'))
+              : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: _recommendations.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: _refreshRecommendations,
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Обновить рекомендации'),
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(48),
-                        ),
+                    margin: const EdgeInsets.only(bottom: 12),
+                    elevation: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        _recommendations[index],
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
-            ),
-          );
-        },
-      ),
     );
   }
 }
