@@ -5,6 +5,9 @@ import 'package:sleep_tracking/data/services/report_chart_service.dart';
 import 'package:sleep_tracking/models/sleep_recording.dart';
 import 'package:sleep_tracking/providers/user_provider.dart';
 
+const List<String> sleepQualityOptions = ['Все', 'Ужасное', 'Плохое', 'Нормальное', 'Хорошее', 'Отличное'];
+const List<String> periodOptions = ['7 дней', '30 дней', 'Все время'];
+
 class ReportChartScreen extends StatefulWidget {
   const ReportChartScreen({super.key});
 
@@ -18,8 +21,8 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
   double _averageSleepDuration = 0.0;
   String _averageSleepQuality = 'Нет данных';
 
-  String _selectedQuality = 'Все';
-  String _selectedPeriod = '7 дней';
+  String _selectedQuality = sleepQualityOptions.first;
+  String _selectedPeriod = periodOptions.first;
 
   @override
   void initState() {
@@ -33,7 +36,7 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
     try {
       final sleepRecords = await _reportChartService.getFilteredSleepRecords(
         userId: userId,
-        quality: _selectedQuality,
+        quality: _selectedQuality == 'Все' ? null : _selectedQuality,
         period: _selectedPeriod,
       );
 
@@ -72,147 +75,139 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    Card(
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Средняя продолжительность сна: ${_averageSleepDuration.toStringAsFixed(2)} ч'),
-                            const SizedBox(height: 8),
-                            Text('Среднее качество сна: $_averageSleepQuality'),
-                          ],
-                        ),
-                      ),
-                    ),
+                    _buildAverageDataCard(),
+
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: DropdownButtonFormField<String>(
-                            value: _selectedQuality,
-                            decoration: const InputDecoration(
-                              labelText: 'Фильтр по качеству',
-                              border: OutlineInputBorder(),
-                            ),
-                            items: ['Все', 'Ужасное', 'Плохое', 'Среднее', 'Хорошее', 'Отличное']
-                                .map(
-                                  (value) => DropdownMenuItem(
-                                value: value,
-                                child: Text(value),
-                              ),
-                            )
-                                .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedQuality = value!;
-                                _fetchData();
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: DropdownButtonFormField<String>(
-                            value: _selectedPeriod,
-                            decoration: const InputDecoration(
-                              labelText: 'Период',
-                              border: OutlineInputBorder(),
-                            ),
-                            items: ['7 дней', '30 дней', 'Все время']
-                                .map(
-                                  (value) => DropdownMenuItem(
-                                value: value,
-                                child: Text(value),
-                              ),
-                            )
-                                .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedPeriod = value!;
-                                _fetchData();
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
+
+
+                    _buildDropdownFilters(),
+
                     const SizedBox(height: 24),
-                    isWide
-                        ? SizedBox(
-                      width: 600,
-                      height: 300,
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: _sleepRecords.isNotEmpty
-                            ? LineChart(
-                          LineChartData(
-                            gridData: FlGridData(show: false),
-                            titlesData: FlTitlesData(show: false),
-                            borderData: FlBorderData(show: true),
-                            lineBarsData: [
-                              LineChartBarData(
-                                spots: _reportChartService.generateSleepDurationGraphData(_sleepRecords),
-                                isCurved: true,
-                                color: Colors.blue,
-                                dotData: FlDotData(show: false),
-                                belowBarData: BarAreaData(show: false),
-                              ),
-                            ],
-                          ),
-                        )
-                            : const Center(
-                          child: Text(
-                            'Нет данных для графика',
-                            style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
-                          ),
-                        ),
-                      ),
-                    )
-                        : SizedBox(
-                      width: double.infinity,
-                      height: 300,
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: _sleepRecords.isNotEmpty
-                            ? LineChart(
-                          LineChartData(
-                            gridData: FlGridData(show: false),
-                            titlesData: FlTitlesData(show: false),
-                            borderData: FlBorderData(show: true),
-                            lineBarsData: [
-                              LineChartBarData(
-                                spots: _reportChartService.generateSleepDurationGraphData(_sleepRecords),
-                                isCurved: true,
-                                color: Colors.blue,
-                                dotData: FlDotData(show: false),
-                                belowBarData: BarAreaData(show: false),
-                              ),
-                            ],
-                          ),
-                        )
-                            : const Center(
-                          child: Text(
-                            'Нет данных для графика',
-                            style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
-                          ),
-                        ),
-                      ),
-                    ),
+
+
+                    _buildSleepChart(isWide),
                   ],
                 ),
               ),
             ),
           );
         },
+      ),
+    );
+  }
+  Widget _buildAverageDataCard() {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Средняя продолжительность сна: ${_averageSleepDuration.toStringAsFixed(2)} ч'),
+            const SizedBox(height: 8),
+            Text('Среднее качество сна: $_averageSleepQuality'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdownFilters() {
+    return Row(
+      children: [
+        Expanded(
+          child: DropdownButtonFormField<String>(
+            value: _selectedQuality,
+            decoration: const InputDecoration(
+              labelText: 'Фильтр по качеству',
+              border: OutlineInputBorder(),
+            ),
+            items: sleepQualityOptions
+                .map(
+                  (value) => DropdownMenuItem(
+                value: value,
+                child: Text(value),
+              ),
+            )
+                .toList(),
+            onChanged: (value) {
+              setState(() {
+                _selectedQuality = value!;
+                _fetchData();
+              });
+            },
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: DropdownButtonFormField<String>(
+            value: _selectedPeriod,
+            decoration: const InputDecoration(
+              labelText: 'Период',
+              border: OutlineInputBorder(),
+            ),
+            items: periodOptions
+                .map(
+                  (value) => DropdownMenuItem(
+                value: value,
+                child: Text(value),
+              ),
+            )
+                .toList(),
+            onChanged: (value) {
+              setState(() {
+                _selectedPeriod = value!;
+                _fetchData();
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+  Widget _buildSleepChart(bool isWide) {
+    return isWide
+        ? SizedBox(
+      width: 600,
+      height: 300,
+      child: _buildChart(),
+    )
+        : SizedBox(
+      width: double.infinity,
+      height: 300,
+      child: _buildChart(),
+    );
+  }
+  Widget _buildChart() {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: _sleepRecords.isNotEmpty
+          ? LineChart(
+        LineChartData(
+          gridData: FlGridData(show: false),
+          titlesData: FlTitlesData(show: false),
+          borderData: FlBorderData(show: true),
+          lineBarsData: [
+            LineChartBarData(
+              spots: _reportChartService.generateSleepDurationGraphData(_sleepRecords),
+              isCurved: true,
+              color: Colors.blue,
+              dotData: FlDotData(show: false),
+              belowBarData: BarAreaData(show: false),
+            ),
+          ],
+        ),
+      )
+          : const Center(
+        child: Text(
+          'Нет данных для графика',
+          style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+        ),
       ),
     );
   }

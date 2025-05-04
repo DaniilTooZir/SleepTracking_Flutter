@@ -7,6 +7,14 @@ import 'package:fl_chart/fl_chart.dart';
 final SupabaseClient _client = SupabaseConnection.client;
 
 class ReportChartService {
+  static const Map<String, int> _qualityScores = {
+    'Ужасное': 1,
+    'Плохое': 2,
+    'Среднее': 3,
+    'Хорошее': 4,
+    'Отличное': 5,
+  };
+
   Future<List<SleepRecording>> getFilteredSleepRecords({
     required int userId,
     String? quality,
@@ -30,12 +38,14 @@ class ReportChartService {
       var query = _client
           .from('SleepRecording')
           .select()
+          .match({
+            'UserId': userId,
+            if (quality != null && quality.isNotEmpty) 'SleepQuality': quality,
+          })
           .gte('Date', startDate.toIso8601String())
           .order('Date', ascending: false);
 
-      final response = await query;
-
-      final List<Map<String, dynamic>> records = response;
+      final List<Map<String, dynamic>> records = await query;
       return records.map(SleepRecording.fromMap).toList();
     } catch (e, stackTrace) {
       debugPrint('Ошибка при получении записей: $e\n$stackTrace');
@@ -48,7 +58,7 @@ class ReportChartService {
 
     final totalDuration = sleepRecords.fold<double>(
       0.0,
-          (previousValue, record) => previousValue + record.sleepDuration,
+      (previousValue, record) => previousValue + record.sleepDuration,
     );
 
     return totalDuration / sleepRecords.length;
@@ -57,34 +67,34 @@ class ReportChartService {
   String calculateAverageSleepQuality(List<SleepRecording> sleepRecords) {
     if (sleepRecords.isEmpty) return 'Нет данных';
 
-    Map<String, int> qualityScores = {
-      'Ужасное': 1,
-      'Плохое': 2,
-      'Среднее': 3,
-      'Хорошее': 4,
-      'Отличное': 5,
-    };
-
     final totalQualityScore = sleepRecords.fold<int>(
       0,
-          (previousValue, record) =>
-      previousValue + (qualityScores[record.sleepQuality] ?? 0),
+      (previousValue, record) =>
+          previousValue + (_qualityScores[record.sleepQuality] ?? 0),
     );
-
     final averageScore = totalQualityScore / sleepRecords.length;
-    return qualityScores.keys
-        .firstWhere((key) => qualityScores[key] == averageScore.toInt());
+    final roundedScore = averageScore.round();
+
+    return _qualityScores.entries
+        .firstWhere(
+          (entry) => entry.value == roundedScore,
+          orElse: () => const MapEntry('Нет данных', 0),
+        )
+        .key;
   }
 
   List<FlSpot> generateSleepDurationGraphData(
-      List<SleepRecording> sleepRecords) {
+    List<SleepRecording> sleepRecords,
+  ) {
     final data = <FlSpot>[];
-
+    sleepRecords.sort((a, b) => a.date.compareTo(b.date));
     for (var record in sleepRecords) {
-      data.add(FlSpot(
-        record.date.millisecondsSinceEpoch.toDouble(),
-        record.sleepDuration,
-      ));
+      data.add(
+        FlSpot(
+          record.date.millisecondsSinceEpoch.toDouble(),
+          record.sleepDuration,
+        ),
+      );
     }
 
     return data;
