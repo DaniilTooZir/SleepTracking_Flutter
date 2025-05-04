@@ -169,16 +169,12 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
     );
   }
   Widget _buildSleepChart(bool isWide) {
-    return isWide
-        ? SizedBox(
-      width: 600,
-      height: 300,
-      child: _buildChart(),
-    )
-        : SizedBox(
-      width: double.infinity,
-      height: 300,
-      child: _buildChart(),
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: AspectRatio(
+        aspectRatio: isWide ? 1.6 : 1,
+        child: _buildChart(),
+      ),
     );
   }
   Widget _buildChart() {
@@ -189,16 +185,25 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
       child: _sleepRecords.isNotEmpty
           ? LineChart(
         LineChartData(
-          gridData: FlGridData(show: false),
-          titlesData: FlTitlesData(show: false),
+          gridData: FlGridData(show: true, horizontalInterval: 1),
+          titlesData: FlTitlesData(
+            leftTitles: AxisTitles(
+              axisNameWidget: const Text('Продолжительность сна (ч)'),
+              sideTitles: SideTitles(showTitles: true),
+            ),
+            bottomTitles: AxisTitles(
+              axisNameWidget: const Text('Дни'),
+              sideTitles: SideTitles(showTitles: true),
+            ),
+          ),
           borderData: FlBorderData(show: true),
           lineBarsData: [
             LineChartBarData(
               spots: _reportChartService.generateSleepDurationGraphData(_sleepRecords),
               isCurved: true,
               color: Colors.blue,
-              dotData: FlDotData(show: false),
-              belowBarData: BarAreaData(show: false),
+              barWidth: 4,
+              belowBarData: BarAreaData(show: true, color: Colors.blue.withOpacity(0.3)),
             ),
           ],
         ),
