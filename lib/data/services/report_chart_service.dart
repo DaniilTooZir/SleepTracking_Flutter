@@ -4,9 +4,8 @@ import 'package:sleep_tracking/data/database/connection_to_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-final SupabaseClient _client = SupabaseConnection.client;
-
 class ReportChartService {
+  final SupabaseClient _client = SupabaseConnection.client;
   static const Map<String, int> _qualityScores = {
     'Ужасное': 1,
     'Плохое': 2,

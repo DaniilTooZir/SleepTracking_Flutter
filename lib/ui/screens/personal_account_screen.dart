@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sleep_tracking/providers/user_provider.dart';
+import 'package:sleep_tracking/data/services/personal_account_service.dart';
+import 'package:sleep_tracking/models/user.dart';
 
 class PersonalAccountScreen extends StatefulWidget {
   const PersonalAccountScreen({super.key});
@@ -8,6 +12,28 @@ class PersonalAccountScreen extends StatefulWidget {
 }
 
 class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
+  UserModel? user;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final userId = Provider.of<UserProvider>(context, listen: false).userId;
+    if (userId != null) {
+      final service = PersonalAccountService();
+      final fetchedUser = await service.getUserData(userId);
+      setState(() {
+        user = fetchedUser;
+        isLoading = false;
+      });
+    } else {
+      setState(() => isLoading = false);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,10 +45,11 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 700),
-                  child: Column(
+                  child: isLoading
+                      ? const CircularProgressIndicator()
+                      : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Заголовок и кнопка закрытия
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -40,7 +67,6 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                         ],
                       ),
                       const Divider(height: 24),
-                      // Аватар и имя
                       Row(
                         children: [
                           const CircleAvatar(
@@ -53,10 +79,10 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          const Flexible(
+                          Flexible(
                             child: Text(
-                              'Имя пользователя',
-                              style: TextStyle(
+                              user?.login ?? 'Имя пользователя',
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -66,7 +92,6 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                         ],
                       ),
                       const SizedBox(height: 24),
-                      // Основные данные
                       const Text(
                         'Основные данные',
                         style: TextStyle(
@@ -91,7 +116,6 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                         subtitle: Text('пусто'),
                       ),
                       const SizedBox(height: 16),
-                      // Контактная информация
                       const Text(
                         'Контактная информация',
                         style: TextStyle(
@@ -100,13 +124,12 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const ListTile(
-                        leading: Icon(Icons.email),
-                        title: Text('Электронная почта:'),
-                        subtitle: Text('пусто'),
+                      ListTile(
+                        leading: const Icon(Icons.email),
+                        title: const Text('Электронная почта:'),
+                        subtitle: Text(user?.email ?? 'пусто'),
                       ),
                       const SizedBox(height: 24),
-                      // Кнопки
                       Wrap(
                         spacing: 16,
                         runSpacing: 8,
