@@ -1,4 +1,6 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sleep_tracking/providers/user_provider.dart';
 import 'package:sleep_tracking/data/services/personal_account_service.dart';
@@ -14,6 +16,9 @@ class PersonalAccountScreen extends StatefulWidget {
 class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
   UserModel? user;
   bool isLoading = true;
+  Uint8List? userPhoto;
+
+  final PersonalAccountService _accountService = PersonalAccountService();
 
   @override
   void initState() {
@@ -24,14 +29,29 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
   Future<void> _loadUserData() async {
     final userId = Provider.of<UserProvider>(context, listen: false).userId;
     if (userId != null) {
-      final service = PersonalAccountService();
-      final fetchedUser = await service.getUserData(userId);
+      final fetchedUser = await _accountService.getUserData(userId);
       setState(() {
         user = fetchedUser;
+        userPhoto = fetchedUser?.photo;
         isLoading = false;
       });
     } else {
       setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      final bytes = await picked.readAsBytes();
+      final userId = Provider.of<UserProvider>(context, listen: false).userId;
+      if (userId != null) {
+        await _accountService.updateUserPhoto(userId.toString(), bytes);
+        setState(() {
+          userPhoto = bytes;
+        });
+      }
     }
   }
   @override
@@ -69,13 +89,19 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                       const Divider(height: 24),
                       Row(
                         children: [
-                          const CircleAvatar(
-                            radius: 40,
-                            backgroundColor: Colors.grey,
-                            child: Icon(
-                              Icons.person,
-                              size: 40,
-                              color: Colors.white,
+                          GestureDetector(
+                            onTap: _pickImage,
+                            child: CircleAvatar(
+                              radius: 40,
+                              backgroundColor: Colors.grey,
+                              backgroundImage: userPhoto != null ? MemoryImage(userPhoto!) : null,
+                              child: userPhoto == null
+                                  ? const Icon(
+                                Icons.person,
+                                size: 40,
+                                color: Colors.white,
+                              )
+                                  : null,
                             ),
                           ),
                           const SizedBox(width: 16),

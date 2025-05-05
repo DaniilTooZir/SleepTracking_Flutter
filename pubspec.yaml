@@ -47,6 +47,8 @@ dependencies:
   #Defense
   flutter_dotenv: ^5.2.1
 
+  #Photo
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
