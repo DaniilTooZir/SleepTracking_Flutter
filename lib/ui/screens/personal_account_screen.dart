@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:sleep_tracking/providers/user_provider.dart';
 import 'package:sleep_tracking/data/services/personal_account_service.dart';
 import 'package:sleep_tracking/models/user.dart';
+import 'package:sleep_tracking/models/user_photo.dart';
 
 class PersonalAccountScreen extends StatefulWidget {
   const PersonalAccountScreen({super.key});
@@ -30,9 +31,10 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
     final userId = Provider.of<UserProvider>(context, listen: false).userId;
     if (userId != null) {
       final fetchedUser = await _accountService.getUserData(userId);
+      final fetchedUserPhoto = await _accountService.getUserPhoto(userId);
       setState(() {
         user = fetchedUser;
-        userPhoto = fetchedUser?.photo;
+        userPhoto = fetchedUserPhoto?.photo;
         isLoading = false;
       });
     } else {
@@ -47,7 +49,7 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
       final bytes = await picked.readAsBytes();
       final userId = Provider.of<UserProvider>(context, listen: false).userId;
       if (userId != null) {
-        await _accountService.updateUserPhoto(userId.toString(), bytes);
+        await _accountService.updateUserPhoto(userId, bytes);
         setState(() {
           userPhoto = bytes;
         });
@@ -89,20 +91,19 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                       const Divider(height: 24),
                       Row(
                         children: [
-                          GestureDetector(
-                            onTap: _pickImage,
-                            child: CircleAvatar(
-                              radius: 40,
-                              backgroundColor: Colors.grey,
-                              backgroundImage: userPhoto != null ? MemoryImage(userPhoto!) : null,
-                              child: userPhoto == null
-                                  ? const Icon(
-                                Icons.person,
-                                size: 40,
-                                color: Colors.white,
-                              )
-                                  : null,
-                            ),
+                          CircleAvatar(
+                            radius: 40,
+                            backgroundColor: Colors.grey,
+                            backgroundImage: userPhoto != null
+                                ? MemoryImage(userPhoto!)
+                                : null,
+                            child: userPhoto == null
+                                ? const Icon(
+                              Icons.person,
+                              size: 40,
+                              color: Colors.white,
+                            )
+                                : null,
                           ),
                           const SizedBox(width: 16),
                           Flexible(
@@ -116,6 +117,12 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: _pickImage,
+                        icon: const Icon(Icons.add_a_photo),
+                        label: const Text('Изменить фото'),
                       ),
                       const SizedBox(height: 24),
                       const Text(
