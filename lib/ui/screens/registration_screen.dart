@@ -8,7 +8,9 @@ class RegisterScreen extends StatefulWidget {
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
-
+//lasdfhgysduf
+//dsaougfdyas
+//safhyts
 class _RegisterScreenState extends State<RegisterScreen> {
   final _loginController = TextEditingController();
   final _emailController = TextEditingController();
