@@ -9,9 +9,7 @@ class RecommendationsScreen extends StatefulWidget {
   @override
   _RecommendationsScreenState createState() => _RecommendationsScreenState();
 }
-//sadfsdfksdpfg
-//asopfigsayugf
-//sladkjhasyudh
+
 class _RecommendationsScreenState extends State<RecommendationsScreen> {
   List<String> _recommendations = [];
   bool _isLoading = true;
