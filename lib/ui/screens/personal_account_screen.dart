@@ -1,11 +1,10 @@
-import 'dart:typed_data';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sleep_tracking/providers/user_provider.dart';
 import 'package:sleep_tracking/data/services/personal_account_service.dart';
 import 'package:sleep_tracking/models/user.dart';
-import 'package:sleep_tracking/models/user_photo.dart';
 
 class PersonalAccountScreen extends StatefulWidget {
   const PersonalAccountScreen({super.key});
@@ -17,7 +16,7 @@ class PersonalAccountScreen extends StatefulWidget {
 class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
   UserModel? user;
   bool isLoading = true;
-  Uint8List? userPhoto;
+  String? userPhoto;
 
   final PersonalAccountService _accountService = PersonalAccountService();
 
@@ -37,6 +36,7 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
         userPhoto = fetchedUserPhoto?.photo;
         isLoading = false;
       });
+      print('userPhoto length: ${userPhoto?.length}');
     } else {
       setState(() => isLoading = false);
     }
@@ -51,7 +51,7 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
       if (userId != null) {
         await _accountService.updateUserPhoto(userId, bytes);
         setState(() {
-          userPhoto = bytes;
+          userPhoto = base64Encode(bytes);
         });
       }
     }
@@ -95,7 +95,7 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                             radius: 40,
                             backgroundColor: Colors.grey,
                             backgroundImage: userPhoto != null
-                                ? MemoryImage(userPhoto!)
+                                ? MemoryImage(base64Decode(userPhoto!))
                                 : null,
                             child: userPhoto == null
                                 ? const Icon(

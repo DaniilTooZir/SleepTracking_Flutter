@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:convert';
 import 'package:sleep_tracking/data/database/connection_to_database.dart';
 import 'package:sleep_tracking/models/user.dart';
 import 'package:sleep_tracking/models/user_photo.dart';
@@ -12,7 +13,9 @@ class PersonalAccountService {
           .from('Users')
           .select()
           .eq('Id', userId)
-          .single();
+          .single()
+          .limit(1)
+          .maybeSingle();
 
       if (response != null) {
         return UserModel.fromMap(response);
@@ -44,16 +47,17 @@ class PersonalAccountService {
   }
   Future<void> updateUserPhoto(int userId, Uint8List photoBytes) async {
     try {
+      final photoBase64 = base64Encode(photoBytes);
       final existingPhoto = await getUserPhoto(userId);
       if (existingPhoto != null) {
         await _client
             .from('UserPhotos')
-            .update({'Photo': photoBytes})
+            .update({'Photo': photoBase64})
             .eq('UserId', userId);
       } else {
         await _client.from('UserPhotos').insert({
           'UserId': userId,
-          'Photo': photoBytes,
+          'Photo': photoBase64,
         });
       }
     } catch (e) {
