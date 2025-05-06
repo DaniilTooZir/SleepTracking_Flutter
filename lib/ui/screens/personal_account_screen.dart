@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:sleep_tracking/providers/user_provider.dart';
 import 'package:sleep_tracking/data/services/personal_account_service.dart';
 import 'package:sleep_tracking/models/user.dart';
+import 'package:go_router/go_router.dart';
 
 class PersonalAccountScreen extends StatefulWidget {
   const PersonalAccountScreen({super.key});
@@ -170,17 +171,23 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                         children: [
                           ElevatedButton.icon(
                             onPressed: () {
-                              //реализовать открытие формы добавления данных
-                            },
-                            icon: const Icon(Icons.add),
-                            label: const Text('Добавить данные'),
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () {
                               //реализовать открытие настроек
                             },
                             icon: const Icon(Icons.settings),
                             label: const Text('Настройки'),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Provider.of<UserProvider>(context, listen: false).clearUserId();
+                              Future.microtask(() {
+                                context.go('/');
+                              });
+                            },
+                            icon: const Icon(Icons.logout),
+                            label: const Text('Выйти'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                            ),
                           ),
                         ],
                       ),
