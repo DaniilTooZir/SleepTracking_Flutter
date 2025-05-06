@@ -6,6 +6,7 @@ import 'package:sleep_tracking/providers/user_provider.dart';
 import 'package:sleep_tracking/data/services/personal_account_service.dart';
 import 'package:sleep_tracking/models/user.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sleep_tracking/ui/screens/setting_screen.dart';
 
 class PersonalAccountScreen extends StatefulWidget {
   const PersonalAccountScreen({super.key});
@@ -171,7 +172,7 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                         children: [
                           ElevatedButton.icon(
                             onPressed: () {
-                              //реализовать открытие настроек
+                              context.go('/settings');
                             },
                             icon: const Icon(Icons.settings),
                             label: const Text('Настройки'),

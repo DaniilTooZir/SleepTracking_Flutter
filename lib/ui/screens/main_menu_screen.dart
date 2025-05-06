@@ -107,6 +107,26 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           ],
         ),
       ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            const DrawerHeader(
+              child: Text(
+                'Меню',
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+            ListTile(
+              title: const Text('Настройки'),
+              leading: const Icon(Icons.settings),
+              onTap: () {
+                Navigator.of(context).pop();
+                context.go('/settings');
+              },
+            ),
+          ],
+        ),
+      ),
       body: widget.child,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,

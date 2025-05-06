@@ -11,6 +11,7 @@ import 'package:sleep_tracking/ui/screens/main_menu_screen.dart';
 import 'package:sleep_tracking/ui/screens/report_chart_screen.dart';
 import 'package:sleep_tracking/ui/screens/sleep_tracking_screen.dart';
 import 'package:sleep_tracking/providers/user_provider.dart';
+import 'package:sleep_tracking/ui/screens/setting_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -35,6 +36,10 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: '/recommendation',
           builder: (context, state) => RecommendationsScreen(),
+        ),
+        GoRoute(
+          path: '/settings',
+          builder: (context, state) => SettingScreen(),
         ),
       ],
     ),
