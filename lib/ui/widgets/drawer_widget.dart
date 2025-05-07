@@ -20,8 +20,8 @@ class _AccountDrawerState extends State<AccountDrawer> {
   Widget build(BuildContext context) {
     return Drawer(
       child: showSettings
-          ? SettingScreen(onBack: toggleScreen)
-          : PersonalAccountScreen(onSettingsPressed: toggleScreen),
+          ? SettingScreen(onBack: () => setState(() => showSettings = false))
+          : PersonalAccountScreen(onSettingsPressed: () => setState(() => showSettings = true)),
     );
   }
 }
