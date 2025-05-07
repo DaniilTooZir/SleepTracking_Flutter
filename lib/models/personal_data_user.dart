@@ -1,13 +1,13 @@
 
 class PersonalDataUser{
-  final int id;
+  final int? id;
   final int userId;
   final String name;
   final String gender;
   final DateTime birthDate;
 
   PersonalDataUser({
-    required this.id,
+    this.id,
     required this.userId,
     required this.name,
     required this.gender,
@@ -23,14 +23,17 @@ class PersonalDataUser{
       userId: map['UserId'],
     );
   }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'Id': id,
+  Map<String, dynamic> toMap({bool includeId = false}) {
+    final map = <String, dynamic>{
       'Name': name,
       'Gender': gender,
       'BirthDate': birthDate.toIso8601String(),
       'UserId': userId,
     };
+
+    if (includeId && id != null) {
+      map['Id'] = id;
+    }
+    return map;
   }
 }
