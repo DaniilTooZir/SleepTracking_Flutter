@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:sleep_tracking/data/services/setting_service.dart';
 
 class SettingScreen extends StatefulWidget{
-  const SettingScreen({super.key});
+  final VoidCallback? onBack;
+  const SettingScreen({super.key, this.onBack});
 
   @override
   _SettSettingScreenState createState() => _SettSettingScreenState();
@@ -19,7 +20,6 @@ class _SettSettingScreenState extends State<SettingScreen>{
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Настройки", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 24),
               _buildPersonalDataSection(),
               const SizedBox(height: 32),
@@ -35,6 +35,16 @@ class _SettSettingScreenState extends State<SettingScreen>{
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text("Настройки", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: widget.onBack,
+            ),
+          ],
+        ),
         const Text("Личные данные", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
         TextField(

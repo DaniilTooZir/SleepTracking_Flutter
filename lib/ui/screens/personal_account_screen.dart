@@ -9,7 +9,8 @@ import 'package:go_router/go_router.dart';
 import 'package:sleep_tracking/ui/screens/setting_screen.dart';
 
 class PersonalAccountScreen extends StatefulWidget {
-  const PersonalAccountScreen({super.key});
+  final VoidCallback? onSettingsPressed;
+  const PersonalAccountScreen({super.key, this.onSettingsPressed});
 
   @override
   _PersonalAccountScreenState createState() => _PersonalAccountScreenState();
@@ -171,9 +172,7 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                         alignment: WrapAlignment.center,
                         children: [
                           ElevatedButton.icon(
-                            onPressed: () {
-                              context.go('/settings');
-                            },
+                            onPressed: widget.onSettingsPressed,
                             icon: const Icon(Icons.settings),
                             label: const Text('Настройки'),
                           ),

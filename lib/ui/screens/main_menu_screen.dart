@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sleep_tracking/ui/screens/personal_account_screen.dart';
+import 'package:sleep_tracking/ui/widgets/drawer_widget.dart';
 
 class MainMenuScreen extends StatefulWidget {
   final Widget child;
@@ -65,7 +66,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                 ),
                 child: Theme(
                   data: Theme.of(context),
-                  child: const PersonalAccountScreen(),
+                  child: const AccountDrawer(),
                 ),
               ),
             ),
@@ -107,26 +108,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           ],
         ),
       ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            const DrawerHeader(
-              child: Text(
-                'Меню',
-                style: TextStyle(fontSize: 24),
-              ),
-            ),
-            ListTile(
-              title: const Text('Настройки'),
-              leading: const Icon(Icons.settings),
-              onTap: () {
-                Navigator.of(context).pop();
-                context.go('/settings');
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: const AccountDrawer(),
       body: widget.child,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
