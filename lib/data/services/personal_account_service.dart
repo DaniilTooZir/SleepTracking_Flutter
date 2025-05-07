@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:sleep_tracking/data/database/connection_to_database.dart';
 import 'package:sleep_tracking/models/user.dart';
 import 'package:sleep_tracking/models/user_photo.dart';
+import 'package:sleep_tracking/models/personal_data_user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PersonalAccountService {
@@ -24,6 +25,25 @@ class PersonalAccountService {
       }
     } catch (e) {
       print('Ошибка при загрузке данных пользователя: $e');
+      return null;
+    }
+  }
+  Future<PersonalDataUser?> getPersonalData(int userId) async {
+    try {
+      final response = await _client
+          .from('PersonalData')
+          .select()
+          .eq('UserId', userId)
+          .single()
+          .maybeSingle();
+
+      if (response != null) {
+        return PersonalDataUser.fromMap(response);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Ошибка при загрузке личных данных пользователя: $e');
       return null;
     }
   }
