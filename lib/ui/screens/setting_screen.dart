@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:sleep_tracking/data/services/setting_service.dart';
 
-class SettingScreen extends StatefulWidget{
+class SettingScreen extends StatefulWidget {
   final VoidCallback? onBack;
   const SettingScreen({super.key, this.onBack});
 
@@ -10,7 +10,7 @@ class SettingScreen extends StatefulWidget{
   _SettSettingScreenState createState() => _SettSettingScreenState();
 }
 
-class _SettSettingScreenState extends State<SettingScreen>{
+class _SettSettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -38,82 +38,164 @@ class _SettSettingScreenState extends State<SettingScreen>{
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text("Настройки", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const Text(
+              "Настройки",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
             IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: widget.onBack,
             ),
           ],
         ),
-        const Text("Личные данные", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
+        const Text(
+          "Личные данные",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 16),
         TextField(
-          decoration: const InputDecoration(labelText: "Имя"),
+          decoration: InputDecoration(
+            labelText: "Имя",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
+          ),
         ),
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
-          decoration: const InputDecoration(labelText: "Пол"),
+          decoration: InputDecoration(
+            labelText: "Пол",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
+          ),
           items: const [
             DropdownMenuItem(value: "Мужской", child: Text("Мужской")),
             DropdownMenuItem(value: "Женский", child: Text("Женский")),
-            DropdownMenuItem(value: "Не указывать", child: Text("Не указывать")),
+            DropdownMenuItem(
+              value: "Не указывать",
+              child: Text("Не указывать"),
+            ),
           ],
           onChanged: (value) {},
         ),
         const SizedBox(height: 16),
         TextField(
           readOnly: true,
-          decoration: const InputDecoration(labelText: "Дата рождения"),
+          decoration: InputDecoration(
+            labelText: "Дата рождения",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
+          ),
           onTap: () {
             // TODO: добавить выбор даты
           },
         ),
         const SizedBox(height: 16),
         TextField(
-          decoration: const InputDecoration(labelText: "Почта"),
+          decoration: InputDecoration(
+            labelText: "Почта",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
+          ),
         ),
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () {
             // TODO: сохранить личные данные
           },
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 48),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
           child: const Text("Сохранить данные"),
         ),
       ],
     );
   }
+
   Widget _buildAccountSettingsSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Настройки аккаунта", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 16),
-        TextField(
-          decoration: const InputDecoration(labelText: "Новый логин"),
+        const Text(
+          "Настройки аккаунта",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         TextField(
-          decoration: const InputDecoration(labelText: "Новая почта"),
+          decoration: InputDecoration(
+            labelText: "Новый логин",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          decoration: InputDecoration(
+            labelText: "Новая почта",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
+          ),
         ),
         const SizedBox(height: 16),
         TextField(
           obscureText: true,
-          decoration: const InputDecoration(labelText: "Старый пароль"),
+          decoration: InputDecoration(
+            labelText: "Старый пароль",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
+          ),
         ),
         const SizedBox(height: 16),
         TextField(
           obscureText: true,
-          decoration: const InputDecoration(labelText: "Новый пароль"),
+          decoration: InputDecoration(
+            labelText: "Новый пароль",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 16,
+            ),
+          ),
         ),
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () {
             // TODO: сменить данные
           },
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 48),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
           child: const Text("Обновить данные"),
         ),
         const SizedBox(height: 32),
-        Divider(),
+        const Divider(),
         const SizedBox(height: 16),
         Center(
           child: TextButton(
@@ -123,7 +205,7 @@ class _SettSettingScreenState extends State<SettingScreen>{
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text("Удалить аккаунт"),
           ),
-        )
+        ),
       ],
     );
   }
