@@ -44,4 +44,17 @@ final GoRouter appRouter = GoRouter(
       ],
     ),
   ],
+  redirect: (context, state) {
+    final userId = Provider.of<UserProvider>(context, listen: false).userId;
+    final isAtLogin = state.matchedLocation == '/';
+
+    if (userId == null && !isAtLogin) {
+      return '/';
+    }
+
+    if (userId != null && isAtLogin) {
+      return '/sleepTracking';
+    }
+    return null;
+  },
 );

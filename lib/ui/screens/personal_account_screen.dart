@@ -8,6 +8,7 @@ import 'package:sleep_tracking/models/user.dart';
 import 'package:sleep_tracking/models/personal_data_user.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sleep_tracking/ui/screens/setting_screen.dart';
+import 'package:sleep_tracking/data/services/session_service.dart';
 
 class PersonalAccountScreen extends StatefulWidget {
   final VoidCallback? onSettingsPressed;
@@ -193,14 +194,14 @@ class _PersonalAccountScreenState extends State<PersonalAccountScreen> {
                                     label: const Text('Настройки'),
                                   ),
                                   ElevatedButton.icon(
-                                    onPressed: () {
-                                      Provider.of<UserProvider>(
+                                    onPressed: () async {
+                                      final userProvider = Provider.of<UserProvider>(
                                         context,
                                         listen: false,
-                                      ).clearUserId();
-                                      Future.microtask(() {
-                                        context.go('/');
-                                      });
+                                      );
+                                      userProvider.clearUserId();
+                                      await SessionService.clearSession();
+                                      context.go('/');
                                     },
                                     icon: const Icon(Icons.logout),
                                     label: const Text('Выйти'),

@@ -6,6 +6,7 @@ import 'package:sleep_tracking/models/user.dart';
 import 'package:sleep_tracking/data/services/login_as_guest_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sleep_tracking/providers/user_provider.dart';
+import 'package:sleep_tracking/data/services/session_service.dart';
 
 class AuthorizationScreen extends StatefulWidget {
   const AuthorizationScreen({super.key});
@@ -37,6 +38,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       );
       if (user.id != null) {
         Provider.of<UserProvider>(context, listen: false).setUserId(user.id!);
+        await SessionService.saveUserId(user.id!);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -57,6 +59,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
     try {
       UserModel guest = await _guestService.loginAsGuest();
       Provider.of<UserProvider>(context, listen: false).setUserId(guest.id!);
+      await SessionService.saveUserId(guest.id!);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Вы вошли как гость.')));
