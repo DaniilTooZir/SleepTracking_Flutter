@@ -320,7 +320,7 @@ class _SettingScreenState extends State<SettingScreen> {
     _nameController.dispose();
     _loginController.dispose();
     _emailController.dispose();
-    _oldPasswordController.dispose()
+    _oldPasswordController.dispose();
     _newPasswordController.dispose();
     super.dispose();
   }
