@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sleep_tracking/models/personal_data_user.dart';
 import 'package:sleep_tracking/providers/user_provider.dart';
 import 'package:sleep_tracking/data/services/setting_service.dart';
+import 'package:sleep_tracking/data/services/session_service.dart';
 
 class SettingScreen extends StatefulWidget {
   final VoidCallback? onBack;
@@ -115,6 +117,43 @@ class _SettingScreenState extends State<SettingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ошибка обновления: $e')),
       );
+    }
+  }
+
+  Future<void> _confirmAndDeleteAccount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Подтверждение удаления'),
+        content: const Text('Вы уверены, что хотите удалить аккаунт? Это действие необратимо.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Удалить'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      final userId = context.read<UserProvider>().userId!;
+      try {
+        await _settingService.deleteAccount(userId);
+        context.read<UserProvider>().logout();
+        await SessionService.clearSession();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Аккаунт успешно удалён')),
+        );
+        context.go('/');
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка при удалении: $e')),
+        );
+      }
     }
   }
 
@@ -305,9 +344,7 @@ class _SettingScreenState extends State<SettingScreen> {
         const SizedBox(height: 16),
         Center(
           child: TextButton(
-            onPressed: () {
-              // TODO: удаление аккаунта с подтверждением
-            },
+            onPressed:_confirmAndDeleteAccount,
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text("Удалить аккаунт"),
           ),

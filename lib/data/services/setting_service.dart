@@ -55,4 +55,10 @@ class SettingService{
         .maybeSingle();
     return response?['Password'];
   }
+
+  Future<void> deleteAccount(int userId) async {
+    await _client.from('PersonalData').delete().eq('UserId', userId);
+    await _client.from('UserPhotos').delete().eq('UserId', userId);
+    await _client.from('Users').delete().eq('Id', userId);
+  }
 }
