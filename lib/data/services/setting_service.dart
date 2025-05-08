@@ -23,4 +23,36 @@ class SettingService{
     if (response == null) return null;
     return PersonalDataUser.fromMap(response);
   }
+
+  Future<void> updateUserData({
+    required int userId,
+    String? newLogin,
+    String? newEmail,
+    String? newPassword,
+  }) async {
+    final updates = <String, dynamic>{};
+
+    if (newLogin != null && newLogin.isNotEmpty) {
+      updates['Login'] = newLogin;
+    }
+    if (newEmail != null && newEmail.isNotEmpty) {
+      updates['Email'] = newEmail;
+    }
+    if (newPassword != null && newPassword.isNotEmpty) {
+      updates['Password'] = newPassword;
+    }
+
+    if (updates.isNotEmpty) {
+      await _client.from('Users').update(updates).eq('Id', userId);
+    }
+  }
+
+  Future<String?> getCurrentPassword(int userId) async {
+    final response = await _client
+        .from('Users')
+        .select('Password')
+        .eq('Id', userId)
+        .maybeSingle();
+    return response?['Password'];
+  }
 }

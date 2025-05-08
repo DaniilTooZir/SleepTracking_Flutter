@@ -9,10 +9,15 @@ class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key, this.onBack});
 
   @override
-  _SettSettingScreenState createState() => _SettSettingScreenState();
+  _SettingScreenState createState() => _SettingScreenState();
 }
 
-class _SettSettingScreenState extends State<SettingScreen> {
+class _SettingScreenState extends State<SettingScreen> {
+  final _loginController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _oldPasswordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+
   final _nameController = TextEditingController();
   String? _selectedGender;
   DateTime? _selectedBirthDate;
@@ -76,6 +81,40 @@ class _SettSettingScreenState extends State<SettingScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Ошибка при сохранении: $e')));
+    }
+  }
+
+  Future<void> _updateAccountSettings() async {
+    final userId = context.read<UserProvider>().userId!;
+    final oldPassword = _oldPasswordController.text;
+    final newPassword = _newPasswordController.text;
+
+    try {
+      final actualPassword = await _settingService.getCurrentPassword(userId);
+
+      if (newPassword.isNotEmpty && oldPassword != actualPassword) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Старый пароль указан неверно')),
+        );
+        return;
+      }
+      await _settingService.updateUserData(
+        userId: userId,
+        newLogin: _loginController.text,
+        newEmail: _emailController.text,
+        newPassword: newPassword.isNotEmpty ? newPassword : null,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Данные аккаунта обновлены')),
+      );
+      _loginController.clear();
+      _emailController.clear();
+      _oldPasswordController.clear();
+      _newPasswordController.clear();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка обновления: $e')),
+      );
     }
   }
 
@@ -202,6 +241,7 @@ class _SettSettingScreenState extends State<SettingScreen> {
         ),
         const SizedBox(height: 16),
         TextField(
+          controller: _loginController,
           decoration: InputDecoration(
             labelText: "Новый логин",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -213,6 +253,7 @@ class _SettSettingScreenState extends State<SettingScreen> {
         ),
         const SizedBox(height: 16),
         TextField(
+          controller: _emailController,
           decoration: InputDecoration(
             labelText: "Новая почта",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -224,6 +265,7 @@ class _SettSettingScreenState extends State<SettingScreen> {
         ),
         const SizedBox(height: 16),
         TextField(
+          controller: _oldPasswordController,
           obscureText: true,
           decoration: InputDecoration(
             labelText: "Старый пароль",
@@ -236,6 +278,7 @@ class _SettSettingScreenState extends State<SettingScreen> {
         ),
         const SizedBox(height: 16),
         TextField(
+          controller: _newPasswordController,
           obscureText: true,
           decoration: InputDecoration(
             labelText: "Новый пароль",
@@ -248,9 +291,7 @@ class _SettSettingScreenState extends State<SettingScreen> {
         ),
         const SizedBox(height: 16),
         ElevatedButton(
-          onPressed: () {
-            // TODO: смена данных аккаунта
-          },
+          onPressed:  _updateAccountSettings,
           style: ElevatedButton.styleFrom(
             minimumSize: const Size(double.infinity, 48),
             shape: RoundedRectangleBorder(
@@ -273,5 +314,14 @@ class _SettSettingScreenState extends State<SettingScreen> {
         ),
       ],
     );
+  }
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _loginController.dispose();
+    _emailController.dispose();
+    _oldPasswordController.dispose()
+    _newPasswordController.dispose();
+    super.dispose();
   }
 }
