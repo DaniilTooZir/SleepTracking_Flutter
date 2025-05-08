@@ -7,7 +7,6 @@ import 'package:sleep_tracking/data/services/personal_account_service.dart';
 import 'package:sleep_tracking/models/user.dart';
 import 'package:sleep_tracking/models/personal_data_user.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sleep_tracking/ui/screens/setting_screen.dart';
 import 'package:sleep_tracking/data/services/session_service.dart';
 
 class PersonalAccountScreen extends StatefulWidget {

@@ -1,6 +1,5 @@
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/material.dart';
 
 //Экраны для маршрутов
 import 'package:sleep_tracking/ui/screens/authorization_screen.dart';

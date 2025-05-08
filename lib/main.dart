@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sleep_tracking/data/database/connection_to_database.dart';
-import 'package:sleep_tracking/ui/screens/authorization_screen.dart';
 import 'package:sleep_tracking/routes/router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:sleep_tracking/providers/user_provider.dart';
