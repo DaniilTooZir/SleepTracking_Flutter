@@ -8,66 +8,56 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PersonalAccountService {
   final SupabaseClient _client = SupabaseConnection.client;
+  // Получение данных аккаунта пользователя из таблицы Users
   Future<UserModel?> getUserData(int userId) async {
     try {
       final response = await _client
           .from('Users')
           .select()
           .eq('Id', userId)
-          .single()
-          .limit(1)
           .maybeSingle();
 
-      if (response != null) {
-        return UserModel.fromMap(response);
-      } else {
-        return null;
-      }
+      return response != null ? UserModel.fromMap(response) : null;
     } catch (e) {
       print('Ошибка при загрузке данных пользователя: $e');
       return null;
     }
   }
+  // Получение личных данных пользователя из таблицы PersonalData
   Future<PersonalDataUser?> getPersonalData(int userId) async {
     try {
       final response = await _client
           .from('PersonalData')
           .select()
           .eq('UserId', userId)
-          .single()
           .maybeSingle();
 
-      if (response != null) {
-        return PersonalDataUser.fromMap(response);
-      } else {
-        return null;
-      }
+      return response != null ? PersonalDataUser.fromMap(response) : null;
     } catch (e) {
       print('Ошибка при загрузке личных данных пользователя: $e');
       return null;
     }
   }
+  // Получение фото пользователя из таблицы UserPhotos
   Future<UserPhoto?> getUserPhoto(int userId) async {
     try {
       final response = await _client
           .from('UserPhotos')
           .select()
           .eq('UserId', userId)
-          .single();
+          .maybeSingle();
 
-      if (response != null) {
-        return UserPhoto.fromMap(response);
-      } else {
-        return null;
-      }
+      return response != null ? UserPhoto.fromMap(response) : null;
     } catch (e) {
       print('Ошибка при загрузке фото пользователя: $e');
       return null;
     }
   }
+  // Обновление или добавление фото пользователя
   Future<void> updateUserPhoto(int userId, Uint8List photoBytes) async {
     try {
       final photoBase64 = base64Encode(photoBytes);
+      // есть ли уже фото у пользователя
       final existingPhoto = await getUserPhoto(userId);
       if (existingPhoto != null) {
         await _client
