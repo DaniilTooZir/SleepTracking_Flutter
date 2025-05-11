@@ -13,7 +13,7 @@ class ReportChartService {
     'Хорошее': 4,
     'Отличное': 5,
   };
-
+  // Получение списка записей сна по заданному периоду и качеству
   Future<List<SleepRecording>> getFilteredSleepRecords({
     required int userId,
     String? quality,
@@ -21,7 +21,7 @@ class ReportChartService {
   }) async {
     try {
       final dateNow = DateTime.now();
-      DateTime startDate;
+      late final DateTime startDate
 
       switch (period) {
         case '7 дней':
@@ -51,7 +51,7 @@ class ReportChartService {
       throw Exception('Не удалось получить записи о сне');
     }
   }
-
+  // Расчёт средней продолжительности сна
   double calculateAverageSleepDuration(List<SleepRecording> sleepRecords) {
     if (sleepRecords.isEmpty) return 0.0;
 
@@ -62,7 +62,7 @@ class ReportChartService {
 
     return totalDuration / sleepRecords.length;
   }
-
+  // Расчёт средней оценки качества сна
   String calculateAverageSleepQuality(List<SleepRecording> sleepRecords) {
     if (sleepRecords.isEmpty) return 'Нет данных';
 
@@ -81,7 +81,7 @@ class ReportChartService {
         )
         .key;
   }
-
+  // Подготовка данных для построения графика продолжительности сна
   List<FlSpot> generateSleepDurationGraphData(
     List<SleepRecording> sleepRecords,
   ) {
