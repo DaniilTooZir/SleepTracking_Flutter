@@ -21,7 +21,7 @@ class ReportChartService {
   }) async {
     try {
       final dateNow = DateTime.now();
-      late final DateTime startDate
+      late final DateTime startDate;
 
       switch (period) {
         case '7 дней':
