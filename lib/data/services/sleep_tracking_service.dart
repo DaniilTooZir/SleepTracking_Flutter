@@ -5,7 +5,7 @@ import 'package:sleep_tracking/models/sleep_recording.dart';
 
 class SleepTrackingService {
   final SupabaseClient _client = SupabaseConnection.client;
-
+  // Добавляет новую запись о сне
   Future<SleepRecording> addSleepRecord({
     required int userId,
     required DateTime date,
@@ -27,21 +27,20 @@ class SleepTrackingService {
         sleepDuration: sleepDuration,
         sleepQuality: sleepQuality,
       );
-
+      // Вставка записи и возврат результата
       final response =
           await _client
               .from('SleepRecording')
               .insert(newRecord.toMap())
               .select()
               .single();
-
       return SleepRecording.fromMap(response);
     } catch (e, stackTrace) {
       debugPrint('Ошибка при добавлении записи о сне: $e\n$stackTrace');
       throw Exception('Не удалось добавить запись о сне');
     }
   }
-
+  // Получает все записи сна пользователя, отсортированные по дате
   Future<List<SleepRecording>> getSleepRecords(int userId) async {
     try {
       final response = await _client
@@ -57,13 +56,10 @@ class SleepTrackingService {
       throw Exception('Не удалось получить записи о сне');
     }
   }
-
+  // Удаляет запись сна по её ID
   Future<void> deleteSleepRecord(int recordId) async {
     try {
-      final response = await _client
-          .from('SleepRecording')
-          .delete()
-          .eq('Id', recordId);
+      await _client.from('SleepRecording').delete().eq('Id', recordId);
     } catch (e, stackTrace) {
       debugPrint('Ошибка при удалении записи: $e\n$stackTrace');
       throw Exception('Не удалось удалить запись о сне');
