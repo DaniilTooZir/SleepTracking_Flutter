@@ -202,10 +202,9 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
     final records = sortedRecords.length > maxPoints
         ? sortedRecords.sublist(sortedRecords.length - maxPoints)
         : sortedRecords;
-
     final spots = List.generate(records.length, (index) {
       final r = records[index];
-      final durationHours = r.sleepDuration / 60.0;
+      final durationHours = r.sleepDuration;
       return FlSpot(index.toDouble(), durationHours);
     });
     return Padding(
@@ -230,6 +229,8 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
               )
                   : LineChart(
                 LineChartData(
+                  minY: 0,
+                  maxX: 24,
                   gridData: FlGridData(
                     show: true,
                     horizontalInterval: 1,
@@ -244,8 +245,8 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
                         getTitlesWidget: (value, meta) {
                           if (value >= 0 && value <= 24) {
                             final hours = value.toInt();
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
+                            return Align(
+                              alignment: Alignment.centerRight,
                               child: Text(
                                 hours.toString(),
                                 style: const TextStyle(fontSize: 10),
