@@ -42,6 +42,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       context.go(_routes[index]);
     }
   }
+
   void _openPersonalAccount(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isWideScreen = screenWidth > 800;
@@ -88,6 +89,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,9 +99,13 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(left: 16),
-              child: Placeholder(fallbackHeight: 40, fallbackWidth: 40),
+              child: Image.asset(
+                'assets/Icon.png',
+                height: 60,
+                width: 60,
+              ),
             ),
             IconButton(
               icon: const Icon(Icons.account_circle),
