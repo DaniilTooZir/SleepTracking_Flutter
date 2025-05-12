@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:sleep_tracking/data/services/report_chart_service.dart';
 import 'package:sleep_tracking/models/sleep_recording.dart';
 import 'package:sleep_tracking/providers/user_provider.dart';
+import 'package:intl/intl.dart';
 
 const List<String> sleepQualityOptions = [
   'Все',
@@ -194,19 +195,19 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
     );
   }
 
-  // TODO: Доработать отображение графика, а именно отображение легенд
-
   Widget _buildSleepChartWithLegend(bool isWide) {
-    final series = [
-      {
-        'color': Colors.blue,
-        'label': 'Длительность сна',
-        'data': _reportChartService.generateSleepDurationGraphData(
-          _sleepRecords,
-        ),
-      },
-    ];
+    final maxPoints = 100;
+    final sortedRecords = List.from(_sleepRecords)
+      ..sort((a, b) => a.date.compareTo(b.date));
+    final records = sortedRecords.length > maxPoints
+        ? sortedRecords.sublist(sortedRecords.length - maxPoints)
+        : sortedRecords;
 
+    final spots = List.generate(records.length, (index) {
+      final r = records[index];
+      final durationHours = r.sleepDuration / 60.0;
+      return FlSpot(index.toDouble(), durationHours);
+    });
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -217,73 +218,96 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              child:
-                  _sleepRecords.isEmpty
-                      ? const Center(
-                        child: Text(
-                          'Нет данных для графика',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      )
-                      : LineChart(
-                        LineChartData(
-                          gridData: FlGridData(
-                            show: true,
-                            horizontalInterval: 1,
-                          ),
-                          titlesData: FlTitlesData(
-                            leftTitles: AxisTitles(
-                              axisNameWidget: const Text(
-                                'Продолжительность сна (ч)',
+              child: records.isEmpty
+                  ? const Center(
+                child: Text(
+                  'Нет данных для графика',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              )
+                  : LineChart(
+                LineChartData(
+                  gridData: FlGridData(
+                    show: true,
+                    horizontalInterval: 1,
+                  ),
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      axisNameWidget: const Text('Продолжительность сна (ч)'),
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        interval: 1,
+                        reservedSize: 40,
+                        getTitlesWidget: (value, meta) {
+                          if (value >= 0 && value <= 24) {
+                            final hours = value.toInt();
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Text(
+                                hours.toString(),
+                                style: const TextStyle(fontSize: 10),
                               ),
-                              sideTitles: SideTitles(showTitles: true),
-                            ),
-                            bottomTitles: AxisTitles(
-                              axisNameWidget: const Text('Дни'),
-                              sideTitles: SideTitles(showTitles: true),
-                            ),
-                          ),
-                          borderData: FlBorderData(show: true),
-                          lineBarsData:
-                              series.map<LineChartBarData>((s) {
-                                return LineChartBarData(
-                                  spots: s['data'] as List<FlSpot>,
-                                  isCurved: true,
-                                  color: s['color'] as Color,
-                                  barWidth: 4,
-                                  belowBarData: BarAreaData(
-                                    show: true,
-                                    color: (s['color'] as Color).withOpacity(
-                                      0.3,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                        ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
                       ),
-            ),
-          ),
-          if (series.length > 1)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Wrap(
-                spacing: 16,
-                runSpacing: 8,
-                children:
-                    series.map((s) {
-                      return ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 120),
-                        child: _legendItem(
-                          s['color'] as Color,
-                          s['label'] as String,
-                        ),
-                      );
-                    }).toList(),
+                    ),
+                    bottomTitles: AxisTitles(
+                      axisNameWidget: const Text('Дата'),
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          final index = value.toInt();
+                          if (index < 0 || index >= records.length) {
+                            return const SizedBox.shrink();
+                          }
+                          final date = records[index].date;
+                          final formatted =
+                          DateFormat('dd.MM').format(date);
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              formatted,
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                          );
+                        },
+                        interval: (records.length > 10)
+                            ? (records.length / 5).floorToDouble()
+                            : 1,
+                        reservedSize: 30,
+                      ),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                  ),
+                  borderData: FlBorderData(show: true),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: spots,
+                      isCurved: true,
+                      color: Colors.blue,
+                      barWidth: 4,
+                      belowBarData: BarAreaData(
+                        show: true,
+                        color: Colors.blue.withOpacity(0.3),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
+          ),
+          const SizedBox(height: 12),
+          _legendItem(Colors.blue, 'Длительность сна'),
         ],
       ),
     );
