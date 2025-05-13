@@ -2,7 +2,7 @@ import 'package:sleep_tracking/models/user.dart';
 import 'package:sleep_tracking/data/database/connection_to_database.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:math';
-
+//Сервис для входа как гостя
 class LoginAsGuestService {
   final SupabaseClient _client = SupabaseConnection.client;
   //Метод для входа в приложение как гость.

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
+// Модель пользователя
 class UserModel{
   final int? id;
   final String login;
@@ -17,7 +17,7 @@ class UserModel{
     this.photo,
     required this.isGuest
 });
-
+  // Создание объекта модели из карты (из Supabase)
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       id: map['Id'],
@@ -28,6 +28,7 @@ class UserModel{
       isGuest: map['IsGuest'],
     );
   }
+  // Преобразование объекта модели в карту для отправки в Supabase
   Map<String, dynamic> toMap({bool includeId = false}) {
     final map = <String, dynamic>{
       'Login': login,

@@ -1,7 +1,7 @@
 import 'package:sleep_tracking/models/user.dart';
 import 'package:sleep_tracking/data/database/connection_to_database.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+//Сервис для авториазации
 class AuthService {
   final SupabaseClient _client = SupabaseConnection.client;
   // Метод авторизации по логину и паролю

@@ -7,7 +7,7 @@ import 'package:sleep_tracking/data/services/login_as_guest_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sleep_tracking/providers/user_provider.dart';
 import 'package:sleep_tracking/data/services/session_service.dart';
-
+// Экран авторизации пользователя
 class AuthorizationScreen extends StatefulWidget {
   const AuthorizationScreen({super.key});
   @override
@@ -15,11 +15,13 @@ class AuthorizationScreen extends StatefulWidget {
 }
 
 class _AuthorizationScreenState extends State<AuthorizationScreen> {
+  // Контроллеры для ввода логина и пароля
   final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
+  // Сервисы для авторизации и гостевого входа
   final _authService = AuthService();
   final _guestService = LoginAsGuestService();
-
+  // Метод авторизации зарегистрированного пользователя
   Future<void> _authorization() async {
     final login = _loginController.text.trim();
     final password = _passwordController.text.trim();
@@ -30,7 +32,6 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       );
       return;
     }
-
     try {
       UserModel user = await _authService.authorizationUser(
         login: login,
@@ -54,7 +55,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       ).showSnackBar(SnackBar(content: Text('Ошибка входа: $e')));
     }
   }
-
+  // Метод гостевого входа
   Future<void> _guestLogin() async {
     try {
       UserModel guest = await _guestService.loginAsGuest();
@@ -71,7 +72,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       ).showSnackBar(SnackBar(content: Text('Ошибка гостевого входа: $e')));
     }
   }
-
+  // Метод для создания UI
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;

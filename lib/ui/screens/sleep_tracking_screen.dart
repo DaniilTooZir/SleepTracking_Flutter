@@ -4,6 +4,7 @@ import 'package:sleep_tracking/data/services/sleep_tracking_service.dart';
 import 'package:sleep_tracking/models/sleep_recording.dart';
 import 'package:sleep_tracking/providers/user_provider.dart';
 
+// Экран для отслеживания сна
 class SleepTrackingScreen extends StatefulWidget {
   const SleepTrackingScreen({super.key});
 
@@ -12,7 +13,9 @@ class SleepTrackingScreen extends StatefulWidget {
 }
 
 class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
+  // Ключ формы для валидации полей
   final _formKey = GlobalKey<FormState>();
+  // Переменные для хранения выбранной даты, времени начала и окончания сна, а также качества сна
   DateTime? _selectedDate;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
@@ -25,15 +28,17 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
     'Хорошее',
     'Отличное',
   ];
+  // Сервис для работы с данными о сне
   final SleepTrackingService _sleepTrackingService = SleepTrackingService();
   List<SleepRecording> _sleepRecords = [];
-
+  // Инициализация данных после построения виджета
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadSleepRecords());
   }
 
+  // Загрузка записей о сне из базы данных
   Future<void> _loadSleepRecords() async {
     final userId = context.read<UserProvider>().userId;
     if (userId != null) {
@@ -50,6 +55,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
     }
   }
 
+  // Открытие диалога для выбора даты
   Future<void> _pickDate() async {
     final date = await showDatePicker(
       context: context,
@@ -62,6 +68,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
     }
   }
 
+  // Открытие диалога для выбора времени
   Future<void> _pickTime({required bool isStart}) async {
     final time = await showTimePicker(
       context: context,
@@ -78,6 +85,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
     }
   }
 
+  // Вычисление продолжительности сна
   Duration _calculateDuration(TimeOfDay start, TimeOfDay end) {
     final startDuration = Duration(hours: start.hour, minutes: start.minute);
     final endDuration = Duration(hours: end.hour, minutes: end.minute);
@@ -86,6 +94,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
         : const Duration(hours: 24) - startDuration + endDuration;
   }
 
+  // Добавление новой записи о сне
   Future<void> _addSleepRecord() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -94,7 +103,6 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
       _showSnackBar('Ошибка: не найден пользователь');
       return;
     }
-
     try {
       final record = await _sleepTrackingService.addSleepRecord(
         userId: userId,
@@ -121,6 +129,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
     }
   }
 
+  // Удаление записи о сне
   Future<void> _deleteSleepRecord(int id) async {
     try {
       await _sleepTrackingService.deleteSleepRecord(id);
@@ -137,12 +146,13 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  // Форматирование продолжительности в строку для отображения
   String _formatDurationToTime(Duration duration) {
     final hours = duration.inHours.remainder(24).toString().padLeft(2, '0');
     final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
     return '$hours:$minutes';
   }
-
+  // Построение строки с выбором времени для начала и конца сна
   Widget _buildTimeRow(String label, TimeOfDay? time, VoidCallback onTap) {
     return Row(
       children: [
@@ -158,7 +168,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
       ],
     );
   }
-
+  // Построение строки с выбором даты
   Widget _buildDateRow() {
     return Row(
       children: [
@@ -174,11 +184,13 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
       ],
     );
   }
+  // Форматирование времени из дробных часов в "чч:мм"
   String formatDoubleHoursToHM(double hours) {
     final h = hours.floor();
     final m = ((hours - h) * 60).round();
     return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
   }
+  // Метод для создания UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -274,7 +286,6 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
                                   'Конец: ${_formatDurationToTime(record.sleepEnd)}, '
                                   'Длительность: ${formatDoubleHoursToHM(record.sleepDuration)} ч, '
                                   'Качество: ${record.sleepQuality}',
-
                                 ),
                                 trailing: IconButton(
                                   icon: const Icon(

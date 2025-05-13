@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sleep_tracking/data/database/connection_to_database.dart';
 import 'package:sleep_tracking/models/sleep_recording.dart';
-
+//Сервис для отслеживания сна
 class SleepTrackingService {
   final SupabaseClient _client = SupabaseConnection.client;
   // Добавляет новую запись о сне

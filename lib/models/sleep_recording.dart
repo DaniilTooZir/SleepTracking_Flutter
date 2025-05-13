@@ -1,4 +1,4 @@
-
+// Модель записи сна пользователя
 class SleepRecording{
   final int? id;
   final int userId;
@@ -17,6 +17,7 @@ class SleepRecording{
     required this.sleepDuration,
     required this.sleepQuality
 });
+  // Преобразование записи из карты Supabase в объект
   factory SleepRecording.fromMap(Map<String, dynamic> map) {
     return SleepRecording(
       id: map['Id'] != null ? map['Id'] as int : null,
@@ -28,7 +29,7 @@ class SleepRecording{
       sleepQuality: map['SleepQuality'],
     );
   }
-
+  // Преобразование строки формата Supabase в объект Duration
   static Duration _parseInterval(String interval) {
     final dayRegex = RegExp(r'(\d+)\s+days?\s+(\d+):(\d+):(\d+)');
     final timeOnlyRegex = RegExp(r'(\d+):(\d+):(\d+)');
@@ -47,10 +48,9 @@ class SleepRecording{
       final seconds = int.parse(match.group(3)!);
       return Duration(hours: hours, minutes: minutes, seconds: seconds);
     }
-
     return Duration.zero;
   }
-
+  // Преобразование записи в карту для отправки в Supabase
   Map<String, dynamic> toMap({bool includeId = false}) {
     final map = <String, dynamic> {
       'UserId': userId,
@@ -60,11 +60,9 @@ class SleepRecording{
       'SleepDuration': sleepDuration,
       'SleepQuality': sleepQuality,
     };
-
     if(includeId && id != null){
       map['Id'] = id;
     }
-
     return map;
   }
 }
