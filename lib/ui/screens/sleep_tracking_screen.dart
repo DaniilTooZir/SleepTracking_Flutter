@@ -57,11 +57,12 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen> {
 
   // Открытие диалога для выбора даты
   Future<void> _pickDate() async {
+    final now = DateTime.now();
     final date = await showDatePicker(
       context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
+      initialDate: _selectedDate ?? now,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2026),
+      lastDate: DateTime(now.year, now.month, now.day),
     );
     if (date != null) {
       setState(() => _selectedDate = date);
