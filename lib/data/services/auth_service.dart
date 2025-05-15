@@ -3,7 +3,9 @@ import 'package:sleep_tracking/data/database/connection_to_database.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 //Сервис для авториазации
 class AuthService {
-  final SupabaseClient _client = SupabaseConnection.client;
+  final SupabaseClient client;
+  AuthService({SupabaseClient? supabaseClient})
+      : client = supabaseClient ?? SupabaseConnection.client;
   // Метод авторизации по логину и паролю
   Future<UserModel> authorizationUser({
     required String login,
@@ -12,7 +14,7 @@ class AuthService {
     try {
       // Запрос к таблице Users с фильтрацией по логину и паролю
       final response =
-          await _client
+          await client
               .from('Users')
               .select()
               .eq('Login', login)

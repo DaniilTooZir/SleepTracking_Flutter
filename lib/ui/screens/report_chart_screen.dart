@@ -196,7 +196,7 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
   }
 
   Widget _buildSleepChartWithLegend(bool isWide) {
-    final maxPoints = 100;
+    final maxPoints = 30;
     final sortedRecords = List.from(_sleepRecords)
       ..sort((a, b) => a.date.compareTo(b.date));
     final records = sortedRecords.length > maxPoints
@@ -271,9 +271,12 @@ class _ReportChartScreenState extends State<ReportChartScreen> {
                           DateFormat('dd.MM').format(date);
                           return Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(
-                              formatted,
-                              style: const TextStyle(fontSize: 10),
+                            child: Transform.rotate(
+                              angle: -1.10,
+                              child: Text(
+                                formatted,
+                                style: const TextStyle(fontSize: 10),
+                              ),
                             ),
                           );
                         },
