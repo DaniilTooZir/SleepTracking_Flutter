@@ -19,18 +19,30 @@ class SleepRecording{
 });
   // Преобразование записи из карты Supabase в объект
   factory SleepRecording.fromMap(Map<String, dynamic> map) {
+    if (!map.containsKey('SleepStart') || map['SleepStart'] == null) {
+      throw ArgumentError('Missing required field SleepStart');
+    }
+    if (!map.containsKey('SleepEnd') || map['SleepEnd'] == null) {
+      throw ArgumentError('Missing required field SleepEnd');
+    }
+    if (!map.containsKey('SleepDuration') || map['SleepDuration'] == null) {
+      throw ArgumentError('Missing required field SleepDuration');
+    }
+    if (!map.containsKey('SleepQuality') || map['SleepQuality'] == null) {
+      throw ArgumentError('Missing required field SleepQuality');
+    }
     return SleepRecording(
       id: map['Id'] != null ? map['Id'] as int : null,
       userId: map['UserId'],
       date: DateTime.parse(map['Date']),
-      sleepStart: _parseInterval(map['SleepStart']?.toString() ?? ''),
-      sleepEnd: _parseInterval(map['SleepEnd']?.toString() ?? ''),
+      sleepStart: parseInterval(map['SleepStart']?.toString() ?? ''),
+      sleepEnd: parseInterval(map['SleepEnd']?.toString() ?? ''),
       sleepDuration: (map['SleepDuration'] as num).toDouble(),
       sleepQuality: map['SleepQuality'],
     );
   }
   // Преобразование строки формата Supabase в объект Duration
-  static Duration _parseInterval(String interval) {
+  static Duration parseInterval(String interval) {
     final dayRegex = RegExp(r'(\d+)\s+days?\s+(\d+):(\d+):(\d+)');
     final timeOnlyRegex = RegExp(r'(\d+):(\d+):(\d+)');
 

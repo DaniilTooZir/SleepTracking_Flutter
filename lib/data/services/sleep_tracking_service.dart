@@ -4,7 +4,18 @@ import 'package:sleep_tracking/data/database/connection_to_database.dart';
 import 'package:sleep_tracking/models/sleep_recording.dart';
 //Сервис для отслеживания сна
 class SleepTrackingService {
-  final SupabaseClient _client = SupabaseConnection.client;
+  final SupabaseClient _client;
+  SleepTrackingService({SupabaseClient? client})
+      : _client = client ?? SupabaseConnection.client;
+  static double calculateSleepDuration(Duration sleepStart, Duration sleepEnd) {
+    if (sleepStart == sleepEnd) {
+      return 24.0;
+    }
+    final duration = sleepEnd - sleepStart;
+    return duration.inMinutes < 0
+        ? (duration + const Duration(hours: 24)).inMinutes / 60
+        : duration.inMinutes / 60;
+  }
   // Добавляет новую запись о сне
   Future<SleepRecording> addSleepRecord({
     required int userId,
@@ -14,10 +25,7 @@ class SleepTrackingService {
     required String sleepQuality,
   }) async {
     try {
-      final duration = sleepEnd - sleepStart;
-      final sleepDuration = duration.inMinutes < 0
-          ? (duration + const Duration(hours: 24)).inMinutes / 60
-          : duration.inMinutes / 60;
+      final sleepDuration = calculateSleepDuration(sleepStart, sleepEnd);
 
       final newRecord = SleepRecording(
         userId: userId,
